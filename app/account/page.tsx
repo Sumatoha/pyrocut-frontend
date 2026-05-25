@@ -47,10 +47,9 @@ export default async function AccountPage() {
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between px-8">
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-sans text-lg font-semibold text-ink"
+            className="flex items-center text-xl"
           >
-            <PyrocutLogo size={28} />
-            pyrocut
+            <PyrocutLogo />
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted">{user.email}</span>

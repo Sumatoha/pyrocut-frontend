@@ -174,7 +174,7 @@ function FeatureCard({ feature }: { feature: Feature }) {
       variants={fadeUp}
       transition={spring.smooth}
     >
-      <div className="grid h-9 w-9 place-items-center rounded-[10px] bg-ink text-heat">
+      <div className="grid h-9 w-9 place-items-center rounded-[10px] bg-violet-soft text-violet">
         {feature.icon}
       </div>
       <h3 className="font-mono text-xl font-bold tracking-[-0.02em]">

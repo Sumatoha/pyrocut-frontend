@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SITE } from "@/lib/constants";
 import { PyrocutLogo } from "./logo";
 
 const NAV_LINKS = [
@@ -31,10 +30,9 @@ export function Nav() {
       <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-8">
         <Link
           href="/"
-          className="flex items-center gap-2.5 font-sans font-semibold text-lg tracking-[-0.01em] text-ink"
+          className="flex items-center text-xl"
         >
-          <PyrocutLogo size={28} />
-          {SITE.name}
+          <PyrocutLogo />
         </Link>
 
         <div className="hidden items-center gap-9 text-sm text-ink md:flex">

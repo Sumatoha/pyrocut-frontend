@@ -32,10 +32,9 @@ export function Footer() {
           <div>
             <Link
               href="/"
-              className="flex items-center gap-2.5 font-sans text-lg font-semibold tracking-[-0.01em] text-ink"
+              className="flex items-center text-xl"
             >
-              <PyrocutLogo size={28} />
-              {SITE.name}
+              <PyrocutLogo />
             </Link>
             <p className="mt-4 max-w-[280px] text-[13px] text-muted">
               A Mac-native screen recorder for founders who&apos;d rather be
