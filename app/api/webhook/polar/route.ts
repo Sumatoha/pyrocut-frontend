@@ -1,5 +1,7 @@
 import { Webhooks } from "@polar-sh/nextjs";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendEmail } from "@/lib/email/send";
+import { welcomeProEmail, welcomeLifetimeEmail } from "@/lib/email/templates";
 
 type SupabaseAdmin = Awaited<ReturnType<typeof createServiceClient>>;
 
@@ -175,6 +177,21 @@ const handler = Webhooks({
           },
           { onConflict: "id" },
         );
+
+        if (fullKey) {
+          const template =
+            plan === "lifetime"
+              ? welcomeLifetimeEmail(fullKey)
+              : welcomeProEmail(fullKey);
+          sendEmail({
+            to: email,
+            subject:
+              plan === "lifetime"
+                ? "Welcome to Pyrocut — Lifetime"
+                : "Welcome to Pyrocut Founder",
+            html: template,
+          }).catch(() => {});
+        }
       },
     );
   },

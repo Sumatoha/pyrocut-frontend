@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <>
       <Nav />
-      <main>
+      <main id="main-content">
         <Hero />
         <Strip />
         <Steps />

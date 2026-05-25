@@ -23,6 +23,7 @@ export function Nav() {
 
   return (
     <nav
+      aria-label="Main navigation"
       className={`sticky top-0 z-50 backdrop-blur-[14px] bg-white/[0.74] border-b transition-colors duration-200 ${
         scrolled ? "border-line" : "border-transparent"
       }`}
