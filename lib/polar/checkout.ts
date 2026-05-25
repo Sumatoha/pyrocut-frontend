@@ -1,4 +1,4 @@
-import { polar } from "./client";
+import { getPolar } from "./client";
 
 type CreateCheckoutParams = {
   productId: string;
@@ -11,7 +11,7 @@ export async function createCheckoutSession({
   customerEmail,
   successUrl,
 }: CreateCheckoutParams) {
-  const checkout = await polar.checkouts.create({
+  const checkout = await getPolar().checkouts.create({
     products: [productId],
     successUrl,
     customerEmail,

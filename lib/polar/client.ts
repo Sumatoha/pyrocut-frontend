@@ -1,5 +1,10 @@
 import { Polar } from "@polar-sh/sdk";
 
-export const polar = new Polar({
-  accessToken: process.env.POLAR_ACCESS_TOKEN!,
-});
+let _polar: Polar | null = null;
+
+export function getPolar() {
+  if (!_polar) {
+    _polar = new Polar({ accessToken: process.env.POLAR_ACCESS_TOKEN! });
+  }
+  return _polar;
+}
