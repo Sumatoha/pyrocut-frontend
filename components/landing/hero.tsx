@@ -20,12 +20,12 @@ export function Hero() {
           variants={fadeUp}
           transition={spring.smooth}
         >
-          Screen demos
+          Your demo looks
           <br />
-          for founders <span className="text-violet">building</span>
+          <span className="text-violet">boring.</span>
           <br />
           <span className="relative -rotate-1 inline-block rounded-[14px] bg-heat px-[0.16em] text-ink shadow-[0_12px_30px_-10px_rgba(255,90,31,0.55),0_0_0_1px_rgba(255,90,31,0.4)]">
-            in&nbsp;public.
+            Fix&nbsp;that.
             <span className="absolute inset-[-2px_-4px] -z-10 rounded-[16px] bg-heat opacity-15 blur-[8px]" />
           </span>
         </motion.h1>
