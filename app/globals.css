@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* surfaces */
+  --bg: #FFFFFF;
+  --bg-soft: #F5F5F4;
+  --surface: #FFFFFF;
+  --ink: #0B0B0E;
+  --ink-soft: #2A2A2F;
+  --muted: #6B6B72;
+  --line: rgba(11, 11, 14, 0.10);
+  --line-strong: rgba(11, 11, 14, 0.14);
+
+  /* brand */
+  --violet: #5B4DEF;
+  --violet-soft: #ECEAFF;
+  --heat: #FF5A1F;
+  --heat-soft: #FFE6D8;
+  --ember: #FFB85C;
+
+  /* pastel blobs */
+  --pastel-peach: #FFCDB6;
+  --pastel-butter: #FFE49A;
+  --pastel-lavender: #DCD3FF;
+  --pastel-mint: #C9EBD3;
+  --pastel-sky: #BFE2F5;
+
+  /* dark surface (editor, dark hero card, CTA band) */
+  --noir: #0B0B0E;
+  --noir-2: #15151A;
+  --noir-3: #1E1E25;
+  --noir-line: rgba(255, 255, 255, 0.08);
+  --noir-line-strong: rgba(255, 255, 255, 0.16);
+  --noir-muted: #8C8C95;
+  --noir-soft: #C9C9D0;
+
+  /* shape */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* shadow */
+  --shadow-card: 0 1px 0 rgba(11, 11, 14, 0.04), 0 8px 24px -12px rgba(11, 11, 14, 0.10);
+  --shadow-lift: 0 24px 60px -28px rgba(11, 11, 14, 0.30);
+  --shadow-glow: 0 0 0 0.5px rgba(91, 77, 239, 0.4), 0 16px 40px -12px rgba(91, 77, 239, 0.5);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --color-heat: var(--heat);
+  --color-heat-soft: var(--heat-soft);
+  --color-ember: var(--ember);
+
+  --color-pastel-peach: var(--pastel-peach);
+  --color-pastel-butter: var(--pastel-butter);
+  --color-pastel-lavender: var(--pastel-lavender);
+  --color-pastel-mint: var(--pastel-mint);
+  --color-pastel-sky: var(--pastel-sky);
+
+  --color-noir: var(--noir);
+  --color-noir-2: var(--noir-2);
+  --color-noir-3: var(--noir-3);
+  --color-noir-line: var(--noir-line);
+  --color-noir-line-strong: var(--noir-line-strong);
+  --color-noir-muted: var(--noir-muted);
+  --color-noir-soft: var(--noir-soft);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-pill: var(--r-pill);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-glow: var(--shadow-glow);
+
+  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-inter);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv01";
+  line-height: 1.5;
+}
+
+@keyframes rec {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes click {
+  0% { transform: scale(0.6); opacity: 0; }
+  20% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+::selection {
+  background: var(--heat);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}

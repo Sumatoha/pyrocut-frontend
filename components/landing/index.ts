@@ -1,0 +1,10 @@
+export { Nav } from "./nav";
+export { Hero } from "./hero";
+export { Strip } from "./strip";
+export { Steps } from "./steps";
+export { Features } from "./features";
+export { Showcase } from "./showcase";
+export { Pricing } from "./pricing";
+export { Faq } from "./faq";
+export { CtaBand } from "./cta-band";
+export { Footer } from "./footer";
