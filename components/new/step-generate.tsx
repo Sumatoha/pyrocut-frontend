@@ -40,7 +40,7 @@ export function StepGenerate({
 
   useEffect(() => {
     if (status === 'ready' && videoId) {
-      const t = setTimeout(() => router.push(`/v/${videoId}`), 700);
+      const t = setTimeout(() => router.push(`/app/v/${videoId}`), 700);
       return () => clearTimeout(t);
     }
   }, [status, videoId, router]);
@@ -89,7 +89,7 @@ export function StepGenerate({
         <div className="mx-auto mt-6 max-w-[420px] rounded-[14px] border border-hair bg-wash px-4 py-3 text-[12px] text-ink2">
           on the free plan your video carries a small pyrocut watermark.{' '}
           <a
-            href="/billing"
+            href="/app/billing"
             className="text-ember underline underline-offset-2"
           >
             upgrade to remove it →

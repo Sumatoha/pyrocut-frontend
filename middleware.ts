@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/auth/middleware';
 
-/** Публичные пути (без auth-гарда). */
+/** Публичные пути (без auth-гарда). '/' — маркетинговый лендинг. */
 const PUBLIC_PREFIXES = ['/login', '/auth', '/kitchen'];
 
 function isPublic(path: string): boolean {
+  if (path === '/') return true; // лендинг (rewrite → /landing.html)
   return PUBLIC_PREFIXES.some(
     (p) => path === p || path.startsWith(`${p}/`),
   );
@@ -27,7 +28,7 @@ export async function middleware(request: NextRequest) {
 
   if (user && path === '/login') {
     const to = request.nextUrl.clone();
-    to.pathname = '/';
+    to.pathname = '/app';
     to.search = '';
     return NextResponse.redirect(to);
   }

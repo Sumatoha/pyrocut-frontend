@@ -53,7 +53,7 @@ export function VideoCard({
 
   async function handleShare(e: React.MouseEvent) {
     e.preventDefault();
-    const url = `${window.location.origin}/v/${video.id}`;
+    const url = `${window.location.origin}/app/v/${video.id}`;
     try {
       await navigator.clipboard.writeText(url);
       toast.success('link copied', url);

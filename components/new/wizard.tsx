@@ -109,7 +109,7 @@ export function Wizard({ plan }: { plan: Plan }) {
     } catch (e) {
       if (e instanceof ApiError && e.isPaymentRequired) {
         toast.error('out of credits', 'taking you to billing');
-        router.push('/billing');
+        router.push('/app/billing');
       } else {
         toast.error('could not generate', errMsg(e));
       }

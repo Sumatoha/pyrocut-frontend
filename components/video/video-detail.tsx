@@ -55,7 +55,7 @@ export function VideoDetail({ id }: { id: string }) {
       <div className="py-20 text-center">
         <h1 className="display text-2xl text-ink">video not found</h1>
         <p className="mt-2 text-sm text-muted">{error}</p>
-        <Link href="/" className="mt-6 inline-block text-sm text-ember underline">
+        <Link href="/app" className="mt-6 inline-block text-sm text-ember underline">
           back to videos
         </Link>
       </div>
@@ -71,12 +71,12 @@ export function VideoDetail({ id }: { id: string }) {
   async function handleDelete() {
     setDeleting(true);
     if (DEMO_MODE) {
-      router.push('/');
+      router.push('/app');
       return;
     }
     try {
       await api.deleteVideo(id);
-      router.push('/');
+      router.push('/app');
     } catch (e) {
       setDeleting(false);
       setConfirm(false);
@@ -89,7 +89,7 @@ export function VideoDetail({ id }: { id: string }) {
     setVarying(true);
     try {
       if (DEMO_MODE) {
-        router.push(`/v/demo-${format}-${preset}`);
+        router.push(`/app/v/demo-${format}-${preset}`);
         return;
       }
       const v = await api.createVideo({
@@ -97,10 +97,10 @@ export function VideoDetail({ id }: { id: string }) {
         format,
         preset,
       });
-      router.push(`/v/${v.id}`);
+      router.push(`/app/v/${v.id}`);
     } catch (e) {
       setVarying(false);
-      if (e instanceof ApiError && e.isPaymentRequired) router.push('/billing');
+      if (e instanceof ApiError && e.isPaymentRequired) router.push('/app/billing');
     }
   }
 
@@ -120,7 +120,7 @@ export function VideoDetail({ id }: { id: string }) {
     <div className="space-y-8">
       <div className="flex items-center justify-between gap-4">
         <Link
-          href="/"
+          href="/app"
           className="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-ink"
         >
           <ArrowLeft className="size-4" /> videos

@@ -26,7 +26,7 @@ export function EmptyState() {
         or social reel in one pass.
       </p>
 
-      <Link href="/new" className={buttonClass('primary', 'lg', 'mt-7')}>
+      <Link href="/app/new" className={buttonClass('primary', 'lg', 'mt-7')}>
         paste a landing url
         <ArrowRight className="size-4" />
       </Link>

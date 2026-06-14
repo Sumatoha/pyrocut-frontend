@@ -14,7 +14,7 @@ export default async function LoginPage({
           sign-in link was invalid or expired. try again.
         </div>
       )}
-      <LoginForm nextPath={next ?? '/'} />
+      <LoginForm nextPath={next ?? '/app'} />
     </div>
   );
 }

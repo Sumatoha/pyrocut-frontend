@@ -15,6 +15,14 @@
   env на Vercel (`NEXT_PUBLIC_SUPABASE_URL/ANON_KEY`, `NEXT_PUBLIC_API_BASE`),
   снять `NEXT_PUBLIC_DEMO`, прогнать live flow URL→brand→render→/v/:id.
 
+## РОУТИНГ (важно)
+- `/` → **публичный лендинг** (`public/landing.html`, отдаётся через `next.config` rewrite
+  `beforeFiles: / → /landing.html`). CTA лендинга ведут на `/login`, лого — на `/`.
+- `/app`, `/app/new`, `/app/billing`, `/app/v/[id]` → **продукт за авторизацией**
+  (`app/app/**`). После логина редирект на `/app` (middleware + auth/callback + LoginForm).
+- `/login`, `/auth/callback`, `/kitchen`, `/` — публичные в middleware (PUBLIC_PREFIXES + `/`).
+- Лендинг = статика, в React НЕ оборачивается (свой `<html>`). Менять текст/CTA — в `public/landing.html`.
+
 ## LOCATION
 - Весь фронтенд = КОРЕНЬ репо `frontend/` (один Next-проект, без apps/packages).
 - Запуск: `cd frontend && pnpm dev|build|typecheck`. Команды под Node 22.

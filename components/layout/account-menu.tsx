@@ -65,7 +65,7 @@ export function AccountMenu({
             </div>
           </div>
           <div className="my-1 h-px bg-hair" />
-          <MenuItem href="/billing" onSelect={() => setOpen(false)}>
+          <MenuItem href="/app/billing" onSelect={() => setOpen(false)}>
             <CreditCard className="size-4" /> billing & plan
           </MenuItem>
           <form action={signOut}>

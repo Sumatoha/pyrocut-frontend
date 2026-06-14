@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/toast';
 import { getSupabase, supabaseConfigured } from '@/lib/client/supabase';
 
-export function LoginForm({ nextPath = '/' }: { nextPath?: string }) {
+export function LoginForm({ nextPath = '/app' }: { nextPath?: string }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState<'magic' | 'google' | null>(null);
   const [sent, setSent] = useState(false);

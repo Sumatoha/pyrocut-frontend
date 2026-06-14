@@ -10,8 +10,8 @@ import { buttonClass } from '@/components/ui/button';
 import { AccountMenu } from '@/components/layout/account-menu';
 
 const links = [
-  { href: '/', label: 'videos' },
-  { href: '/billing', label: 'billing' },
+  { href: '/app', label: 'videos' },
+  { href: '/app/billing', label: 'billing' },
 ];
 
 export function TopBar({
@@ -25,13 +25,13 @@ export function TopBar({
 }) {
   const pathname = usePathname();
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+    href === '/app' ? pathname === '/app' : pathname.startsWith(href);
 
   return (
     <header className="sticky top-0 z-50 border-b border-hair bg-paper/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-6 px-5 sm:px-8">
         <div className="flex items-center gap-8">
-          <Link href="/" aria-label="pyrocut home">
+          <Link href="/app" aria-label="pyrocut home">
             <Wordmark />
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">
@@ -54,7 +54,7 @@ export function TopBar({
 
         <div className="flex items-center gap-3">
           <Link
-            href="/new"
+            href="/app/new"
             aria-label="new video"
             className={buttonClass('primary', 'sm', 'gap-1.5')}
           >
