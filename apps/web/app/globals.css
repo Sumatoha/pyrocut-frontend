@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+   pyrocut design tokens (§3) → Tailwind theme
+   Эстетика лендинга: белый paper + воздух, ember-акцент дозировано,
+   тёмные «win»-поверхности как герой-объекты.
+-------------------------------------------------------------------------- */
+@theme {
+  /* surfaces / text */
+  --color-paper: #ffffff;
+  --color-wash: #fbf8f3;
+  --color-ink: #0d0c11;
+  --color-ink2: #3a3742;
+  --color-muted: #7c7886;
+  --color-faint: #b9b5be;
+  --color-hair: rgba(13, 12, 17, 0.09);
+  --color-hair-strong: rgba(13, 12, 17, 0.14);
+
+  /* accent */
+  --color-ember: #ff5a1f;
+  --color-ember2: #ff8c3c;
+  --color-ember-soft: #ffe9dd;
+
+  /* dark product surface */
+  --color-win: #100e16;
+  --color-win2: #17141f;
+  --color-win3: #221d2e;
+  --color-winline: rgba(255, 255, 255, 0.11);
+  --color-winline-strong: rgba(255, 255, 255, 0.18);
+  --color-winmuted: #8b8794;
+
+  /* type */
+  --font-display: -apple-system, "SF Pro Display", Inter, system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  /* shape */
+  --radius-win: 16px;
+  --radius-card: 20px;
+  --radius-lg2: 22px;
+
+  /* shadow */
+  --shadow-lift: 0 30px 60px -40px rgba(20, 12, 30, 0.25);
+  --shadow-win: 0 40px 90px -50px rgba(20, 12, 30, 0.5);
+  --shadow-pop: 0 18px 50px -22px rgba(20, 12, 30, 0.3);
+
+  /* motion */
+  --animate-rec: rec 1.3s ease-in-out infinite;
+  --animate-statuspulse: statuspulse 1.8s ease-in-out infinite;
+  --animate-clickring: clickring 2.2s ease-out infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+}
+
+@keyframes rec {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+@keyframes statuspulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 18%, transparent); opacity: 0.85; }
+}
+@keyframes clickring {
+  0% { transform: scale(0.6); opacity: 0; }
+  20% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes skeleton {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes popin {
+  from { opacity: 0; transform: translateY(6px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --------------------------------------------------------------------------
+   base
+-------------------------------------------------------------------------- */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    line-height: 1.5;
+  }
+  ::selection {
+    background: var(--color-ember);
+    color: #fff;
+  }
+  /* видимый keyboard-focus */
+  :focus-visible {
+    outline: 2px solid var(--color-ember);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+    text-transform: lowercase;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   utilities
+-------------------------------------------------------------------------- */
+
+/* ember-градиент 96deg (CTA, прогресс) */
+@utility ember-grad {
+  background-image: linear-gradient(96deg, var(--color-ember), var(--color-ember2));
+}
+@utility ember-grad-text {
+  background-image: linear-gradient(96deg, var(--color-ember), var(--color-ember2));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* mono-микролейбл UPPERCASE с трекингом */
+@utility microlabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* display-заголовок: tight, lowercase */
+@utility display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  text-transform: lowercase;
+  line-height: 0.98;
+}
+
+/* тёмная win-поверхность как герой-объект */
+@utility win-surface {
+  background: var(--color-win);
+  border: 1px solid var(--color-winline);
+  color: #fff;
+}
+
+/* гасим декоративный моушн при reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,58 @@
+# PROGRESS — pyrocut frontend
+
+## CURRENT STATE
+- **done:** M0–M7 ✅ + ИНТЕГРАЦИЯ С БЭКОМ (код). build+typecheck зелёные.
+  Контракт `packages/shared` синхронизирован с бэком (camelCase, зеркало backend/packages/shared).
+  API-клиент разворачивает конверт `{ok,data}`. Realtime-строки мапятся snake→camel
+  (`lib/client/mappers.ts`). Storage-пути приватных buckets подписываются
+  (`lib/client/storage.ts` + `useSignedUrl`). Profile.email — из auth-юзера (в profiles колонки нет).
+- **in-progress:** —
+- **next:** VERIFIED на живом окружении: создать Supabase project (ОБЩИЙ с бэком),
+  `.env.local` (тот же проект, что backend/.env; на бэке APP_URL = origin фронта для CORS),
+  снять `NEXT_PUBLIC_DEMO`, прогнать live flow URL→brand→render→/v/:id.
+
+## LOCATION
+- Весь фронтенд в `frontend/` (корень репо — контейнер; рядом ляжет `backend/`).
+- Запуск: `cd frontend && pnpm dev|build|typecheck`. Пути ниже — относительно `frontend/`.
+- DEMO-режим (UI без бэка): `NEXT_PUBLIC_DEMO=1 pnpm dev`. В UI метка «demo».
+
+## RESUME HERE
+Все майлстоуны фронта готовы. Дальше — подключение бэкенда:
+1. Создать Supabase project, прописать `NEXT_PUBLIC_SUPABASE_URL/ANON_KEY` в `apps/web/.env.local`
+   (degraded-баннер и login заработают по-настоящему, realtime включится).
+2. Свериться с `packages/shared` от бэка (snake_case, поля Video/Project/Brand/Profile) — слить.
+3. Когда живы эндпоинты §6 — снять `NEXT_PUBLIC_DEMO`, прогнать live flow: URL→brand→render→/v/:id.
+4. profiles-таблица (id,email,plan,credits) для getProfile — иначе дефолт free/0.
+
+## MILESTONES
+- [x] M0. Scaffold: Next 15, Tailwind токены §3, шрифты, layout/навбар, тема, `lib/client/supabase.ts`.
+- [x] M1. Примитивы `components/ui` (Button/Card/Chip/StatusDot/Scrubber/Toast/Skeleton/Modal/Dropzone) + витрина `/kitchen`.
+- [x] M2. Auth (`/login`: magic link + Google OAuth) + middleware-guard + профиль/план в TopBar (AccountMenu + sign out).
+- [x] M3. Dashboard `/` — сетка видео + realtime (useVideos) + empty/error/skeleton + demo-режим.
+- [x] M4. New-video flow `/new` (4 шага §4) с realtime-стадиями. VERIFIED в demo (Playwright, все шаги). Реальный URL→ready — после бэка.
+- [x] M5. Video detail `/v/[id]` — live iframe/MP4 + download + share + variations + delete. Проверено в demo.
+- [x] M6. Billing `/billing` — тарифы (free=hobby/pro=founder/studio) + checkout + план/кредиты. Проверено в demo.
+- [x] M7. Polish — мобильная навигация (адаптивная new-кнопка), адаптив проверен на 390px (dashboard/new/billing), focus-visible + reduced-motion глобально.
+
+## DECISIONS
+- Монорепо pnpm (`apps/web` + `packages/shared`). Tailwind **v4** (CSS-first `@theme`).
+- Роуты: `(auth)/login`, `(dashboard)/` (page=dashboard), `(dashboard)/new`,
+  `(dashboard)/v/[id]`, `(dashboard)/billing`. `/_kitchen` вне групп.
+- `packages/shared` засеян нами из §6 (enums + интерфейсы) — контракт до появления бэка.
+- Token-слой: CSS-переменные §3 в `globals.css` + маппинг в Tailwind `@theme`.
+- Весь проект перенесён в `frontend/` (по просьбе) — корень репо общий для front+back.
+- DEMO-режим: `NEXT_PUBLIC_DEMO=1` подменяет API на `lib/client/demo.ts`, метка «demo» в UI.
+- Thumbnail без `thumb_path`: детерминированный кинематографичный градиент (`lib/thumb.ts`).
+- Витрина: `/kitchen` (НЕ `/_kitchen` — папки с `_` в App Router приватные, исключены
+  из роутинга; `/kitchen` — прагматичный эквивалент).
+- Шрифты: системный стек (display=SF/system, mono=SF Mono/JetBrains) — без веб-загрузки.
+- Кнопка-ссылка: `buttonClass(variant,size)` для `next/link` (Button остаётся `<button>`).
+- Billing план-маппинг: free=hobby ($0), pro=founder ($19), studio=studio ($49). popular=pro (тёмная).
+
+## OPEN QUESTIONS
+- `packages/shared` владеет бэкенд. Сейчас засеян нами — при появлении бэка свериться/слить.
+- API-эндпоинты (§6) ещё не существуют. Все вызовы помечены `// TODO(stub)`, при отсутствии
+  бэка отдают мок/ошибку явно. Реальная проверка M4 (URL→ready) — после бэка.
+- Supabase project ещё не создан. Клиент читает `NEXT_PUBLIC_SUPABASE_*`; без них —
+  auth/realtime в degraded-режиме (явный warning).
+- Магик-линк vs OAuth для `/login` — пока magic link (минимум). Уточнить.

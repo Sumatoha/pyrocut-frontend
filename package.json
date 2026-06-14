@@ -1,0 +1,12 @@
+{
+  "name": "pyrocut",
+  "private": true,
+  "packageManager": "pnpm@11.1.3",
+  "scripts": {
+    "dev": "pnpm --filter @pyrocut/web dev",
+    "build": "pnpm --filter @pyrocut/web build",
+    "start": "pnpm --filter @pyrocut/web start",
+    "lint": "pnpm --filter @pyrocut/web lint",
+    "typecheck": "pnpm --filter @pyrocut/web typecheck"
+  }
+}
