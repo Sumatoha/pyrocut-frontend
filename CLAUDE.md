@@ -14,14 +14,17 @@ API и типы из `packages/shared`.
 - Next.js 15 (App Router) + TypeScript + Tailwind v4 (CSS-first `@theme`).
 - Supabase JS client (auth + realtime + signed URLs).
 - Иконки — `lucide-react`. Примитивы — свои (Radix только под доступность).
-- Монорепо pnpm: `apps/web` (UI) + `packages/shared` (типы-контракт).
+- ОДИН Next-проект в КОРНЕ репо (`frontend/`). Раньше было монорепо
+  `apps/web` + `packages/shared` — сплющено в корень для zero-config Vercel-деплоя
+  (Vercel определяет фреймворк по корневому `package.json`). sharp-сборку разрешает
+  `pnpm-workspace.yaml → allowBuilds: sharp: true`.
 
 ## Границы
-- Владеем: `apps/web/app/**`, `apps/web/components/**`, `apps/web/lib/client/**`,
+- Владеем: `app/**`, `components/**`, `lib/client/**`, `shared/index.ts`,
   Tailwind/токены, шрифты.
-- НЕ трогаем: `app/api/**`, `lib/server/**`, `supabase/**`, `apps/worker`.
-- `packages/shared` — контракт типов. Сейчас засеян нами из §6 промпта (бэка ещё нет);
-  когда бэкенд появится — он владеет, мы только импортируем. См. PROGRESS → OPEN QUESTIONS.
+- Бэкенд — отдельный репозиторий (`pyrocut-backend`), не в этом проекте.
+- `shared/index.ts` — контракт типов (импорт `@pyrocut/shared` через tsconfig-алиас),
+  ЗЕРКАЛО backend/packages/shared (camelCase). Владеет бэкенд — синхронизировать при изменениях.
 
 ## Дизайн-токены (§3 промпта — соблюдай строго)
 ```

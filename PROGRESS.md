@@ -1,19 +1,23 @@
 # PROGRESS — pyrocut frontend
 
 ## CURRENT STATE
-- **done:** M0–M7 ✅ + ИНТЕГРАЦИЯ С БЭКОМ (код). build+typecheck зелёные.
-  Контракт `packages/shared` синхронизирован с бэком (camelCase, зеркало backend/packages/shared).
+- **done:** M0–M7 ✅ + ИНТЕГРАЦИЯ С БЭКОМ + ПЛОСКАЯ СТРУКТУРА ПОД VERCEL. build+typecheck зелёные.
+  Контракт `shared/index.ts` синхронизирован с бэком (camelCase, зеркало backend/packages/shared).
   API-клиент разворачивает конверт `{ok,data}`. Realtime-строки мапятся snake→camel
   (`lib/client/mappers.ts`). Storage-пути приватных buckets подписываются
   (`lib/client/storage.ts` + `useSignedUrl`). Profile.email — из auth-юзера (в profiles колонки нет).
+- **СТРУКТУРА:** монорепо `apps/web`+`packages/shared` сплющено в КОРЕНЬ репо
+  (Vercel zero-config: фреймворк по корневому package.json). `@pyrocut/shared` → `shared/index.ts`
+  через tsconfig-алиас; `pnpm-workspace.yaml` хранит только `allowBuilds: sharp: true` (иначе
+  `pnpm install` exit 1 на ignored-builds → падает и Vercel-install). `next.config` без transpilePackages.
 - **in-progress:** —
 - **next:** VERIFIED на живом окружении: создать Supabase project (ОБЩИЙ с бэком),
-  `.env.local` (тот же проект, что backend/.env; на бэке APP_URL = origin фронта для CORS),
+  env на Vercel (`NEXT_PUBLIC_SUPABASE_URL/ANON_KEY`, `NEXT_PUBLIC_API_BASE`),
   снять `NEXT_PUBLIC_DEMO`, прогнать live flow URL→brand→render→/v/:id.
 
 ## LOCATION
-- Весь фронтенд в `frontend/` (корень репо — контейнер; рядом ляжет `backend/`).
-- Запуск: `cd frontend && pnpm dev|build|typecheck`. Пути ниже — относительно `frontend/`.
+- Весь фронтенд = КОРЕНЬ репо `frontend/` (один Next-проект, без apps/packages).
+- Запуск: `cd frontend && pnpm dev|build|typecheck`. Команды под Node 22.
 - DEMO-режим (UI без бэка): `NEXT_PUBLIC_DEMO=1 pnpm dev`. В UI метка «demo».
 
 ## RESUME HERE
