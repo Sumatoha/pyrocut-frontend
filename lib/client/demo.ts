@@ -103,5 +103,22 @@ export const demoProject: Project = {
     h2: null,
     cta: 'start free trial',
     screenshotPath: null,
+    fullPagePath: null,
+    analysis: {
+      palette: {
+        bg: '#0D0C11',
+        surface: '#17141F',
+        text: '#FBF8F3',
+        textMuted: '#B9B5BE',
+        accent: '#5B4DEF',
+        accentAlt: '#FFB85C',
+      },
+      brightness: 'dark',
+      energy: 'energetic',
+      mood: ['bold', 'tech', 'confident'],
+      sections: ['hero', 'features', 'pricing'],
+      motion: 'snappy cuts with quick parallax on the product shots',
+      typography: 'grotesk, tight, mixed-case',
+    },
   },
 };

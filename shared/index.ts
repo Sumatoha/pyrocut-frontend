@@ -26,7 +26,16 @@ export type AssetKind = (typeof ASSET_KINDS)[number];
 export const VIDEO_FORMATS = ['16:9', '9:16'] as const;
 export type VideoFormat = (typeof VIDEO_FORMATS)[number];
 
-export const VIDEO_PRESETS = ['dolly', 'snapcut', 'editorial'] as const;
+export const VIDEO_PRESETS = [
+  'dolly',
+  'snapcut',
+  'editorial',
+  'neon',
+  'kinetic',
+  'glass',
+  'terminal',
+  'liquid',
+] as const;
 export type VideoPreset = (typeof VIDEO_PRESETS)[number];
 
 export const VIDEO_STATUSES = [
@@ -55,9 +64,48 @@ export const FORMAT_DIMENSIONS: Record<
 
 // ---- entities -------------------------------------------------------------
 
+export const BRIGHTNESS = ['dark', 'mixed', 'light'] as const;
+export type Brightness = (typeof BRIGHTNESS)[number];
+
+export const ENERGY = ['calm', 'balanced', 'energetic'] as const;
+export type Energy = (typeof ENERGY)[number];
+
 /**
- * Извлечённый бренд лендинга (projects.brand jsonb). screenshotPath — storage-путь
- * приватного bucket 'assets', НЕ готовый URL: фронт подписывает через lib/client/storage.
+ * Роли палитры из vision-анализа (не сырые доминирующие цвета) — то, чем
+ * красится КОМПОЗИЦИЯ: фон / поверхности / текст / акцент бренда.
+ */
+export interface PaletteRoles {
+  bg: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  accent: string;
+  accentAlt: string | null;
+}
+
+/**
+ * brand.analysis — структурный creative-brief из vision-прохода над full-page
+ * скрином. Источник правды о ВАЙБЕ лендинга (палитра по ролям + язык движения).
+ * null, если анализ не удался — генерация откатывается на сырые colors/тексты.
+ */
+export interface BrandAnalysis {
+  palette: PaletteRoles;
+  brightness: Brightness;
+  energy: Energy;
+  /** Прилагательные вайба: «тёмный, дерзкий, тех» / «лёгкий, дружелюбный». */
+  mood: string[];
+  /** О чём говорят секции лендинга, сверху вниз. */
+  sections: string[];
+  /** Рекомендованный язык движения (1-2 фразы). */
+  motion: string | null;
+  /** Вайб типографики. */
+  typography: string | null;
+}
+
+/**
+ * Извлечённый бренд лендинга (projects.brand jsonb). screenshotPath / fullPagePath —
+ * storage-пути приватного bucket 'assets', НЕ готовые URL: фронт подписывает через
+ * lib/client/storage.
  */
 export interface Brand {
   colors: string[];
@@ -66,6 +114,10 @@ export interface Brand {
   h2: string | null;
   cta: string | null;
   screenshotPath: string | null;
+  /** Полностраничный скрин (для vision-генерации). Может отличаться от hero-скрина. */
+  fullPagePath: string | null;
+  /** Структурный vision-brief; null если анализ не удался. */
+  analysis: BrandAnalysis | null;
 }
 
 export interface Profile {

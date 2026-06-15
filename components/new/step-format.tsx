@@ -39,6 +39,31 @@ const PRESET_INFO: Record<
     blurb: 'quiet, lots of air — lets it breathe',
     bars: [40, 45, 42, 48, 44],
   },
+  neon: {
+    title: 'neon',
+    blurb: 'glow, contrast, retro-future pulse',
+    bars: [85, 40, 95, 60, 90],
+  },
+  kinetic: {
+    title: 'kinetic',
+    blurb: 'kinetic type — words snap and fly',
+    bars: [95, 30, 85, 45, 100],
+  },
+  glass: {
+    title: 'glass',
+    blurb: 'frosted, soft depth, gentle drift',
+    bars: [50, 60, 55, 66, 58],
+  },
+  terminal: {
+    title: 'terminal',
+    blurb: 'mono, type-on, dev-tool energy',
+    bars: [100, 100, 30, 100, 30],
+  },
+  liquid: {
+    title: 'liquid',
+    blurb: 'fluid morphs, organic easing',
+    bars: [40, 72, 54, 82, 48],
+  },
 };
 
 /** Шаг 3 — формат + пресет монтажа + опц. бриф. */

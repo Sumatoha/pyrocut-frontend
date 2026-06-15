@@ -178,6 +178,54 @@ export function StepBrand({
         </div>
       </div>
 
+      {brand.analysis && (
+        <div className="rounded-[var(--radius-card)] border border-hair bg-wash/60 p-5">
+          <span className="microlabel">how we read your vibe</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Chip tone="ember">{brand.analysis.brightness}</Chip>
+            <Chip tone="ember">{brand.analysis.energy}</Chip>
+            {brand.analysis.mood.map((m) => (
+              <Chip key={m}>{m}</Chip>
+            ))}
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            {(
+              [
+                ['bg', brand.analysis.palette.bg],
+                ['surface', brand.analysis.palette.surface],
+                ['text', brand.analysis.palette.text],
+                ['accent', brand.analysis.palette.accent],
+                ['accent 2', brand.analysis.palette.accentAlt],
+              ] as [string, string | null][]
+            )
+              .filter((r): r is [string, string] => r[1] !== null)
+              .map(([role, color]) => (
+                <span key={role} className="flex items-center gap-1.5">
+                  <span
+                    className="block size-6 rounded-[7px] border border-hair shadow-sm"
+                    style={{ background: color }}
+                    title={color}
+                  />
+                  <span className="font-[family-name:var(--font-mono)] text-[11px] text-muted">
+                    {role}
+                  </span>
+                </span>
+              ))}
+          </div>
+
+          {brand.analysis.motion && (
+            <p className="mt-4 text-[12px] leading-snug text-muted">
+              motion · {brand.analysis.motion}
+            </p>
+          )}
+          <p className="mt-2 text-[11px] leading-snug text-faint">
+            this is the read your video is built from. tweak the palette above to
+            steer it.
+          </p>
+        </div>
+      )}
+
       <div>
         <span className="microlabel">logo & extra screenshots — optional</span>
         <Dropzone
