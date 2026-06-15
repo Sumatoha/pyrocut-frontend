@@ -31,13 +31,17 @@ import { Modal } from '@/components/ui/modal';
 import { Scrubber } from '@/components/ui/scrubber';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/toast';
 import { RecTimer } from '@/components/motion/rec-timer';
 import { VideoThumb } from './video-thumb';
+import { CompositionPreview } from './composition-preview';
 
-const isReal = (p?: string | null) => Boolean(p) && p !== 'about:blank';
+const isReal = (p?: string | null): p is string =>
+  Boolean(p) && p !== 'about:blank';
 
 export function VideoDetail({ id }: { id: string }) {
   const router = useRouter();
+  const toast = useToast();
   const { video, error } = useVideo(id);
   const siblings = useProjectVideos(video?.projectId ?? null, id);
 
@@ -100,7 +104,14 @@ export function VideoDetail({ id }: { id: string }) {
       router.push(`/app/v/${v.id}`);
     } catch (e) {
       setVarying(false);
-      if (e instanceof ApiError && e.isPaymentRequired) router.push('/app/billing');
+      if (e instanceof ApiError && e.isPaymentRequired) {
+        router.push('/app/billing');
+        return;
+      }
+      toast.error(
+        'could not create variation',
+        e instanceof ApiError ? e.message : undefined,
+      );
     }
   }
 
@@ -111,8 +122,9 @@ export function VideoDetail({ id }: { id: string }) {
   async function copyShare() {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      toast.success('link copied', window.location.href);
     } catch {
-      /* noop */
+      toast.error('could not copy link');
     }
   }
 
@@ -157,12 +169,7 @@ export function VideoDetail({ id }: { id: string }) {
                 className="absolute inset-0 size-full bg-black object-contain"
               />
             ) : isReal(compositionUrl) ? (
-              <iframe
-                src={compositionUrl ?? undefined}
-                sandbox="allow-scripts"
-                title="live composition preview"
-                className="absolute inset-0 size-full border-0"
-              />
+              <CompositionPreview url={compositionUrl} />
             ) : (
               <>
                 <RecTimer time="00:00:00" className="absolute left-4 top-4" />
@@ -241,7 +248,7 @@ export function VideoDetail({ id }: { id: string }) {
           {siblings.length > 0 && (
             <div className="grid grid-cols-2 gap-2 pt-2">
               {siblings.map((s) => (
-                <Link key={s.id} href={`/v/${s.id}`} className="group block">
+                <Link key={s.id} href={`/app/v/${s.id}`} className="group block">
                   <VideoThumb video={s} className="!aspect-video" />
                   <div className="mt-1.5 flex gap-1">
                     <Chip>{s.format}</Chip>

@@ -68,7 +68,7 @@ export function VideoCard({
         {/* ember click-ring акцент на hover */}
         <span className="pointer-events-none absolute right-5 top-5 z-10 size-2 rounded-full bg-ember opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-hover:animate-[var(--animate-clickring)]" />
 
-        <Link href={`/v/${video.id}`} aria-label={`open video ${video.id}`}>
+        <Link href={`/app/v/${video.id}`} aria-label={`open video ${video.id}`}>
           <VideoThumb video={video} />
         </Link>
 
