@@ -57,7 +57,7 @@ export function LoginForm({ nextPath = '/app' }: { nextPath?: string }) {
   if (sent) {
     return (
       <div className="w-full max-w-[400px] text-center">
-        <span className="mx-auto mb-5 grid size-12 place-items-center rounded-full bg-ember-soft text-ember">
+        <span className="mx-auto mb-5 grid size-12 place-items-center rounded-full bg-violet-soft text-violet">
           <CheckCircle2 className="size-6" />
         </span>
         <h1 className="display text-2xl text-ink">check your inbox</h1>
@@ -108,7 +108,7 @@ export function LoginForm({ nextPath = '/app' }: { nextPath?: string }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@startup.com"
-              className="h-12 w-full rounded-[14px] border border-hair-strong bg-paper pl-10 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-ember"
+              className="h-12 w-full rounded-[14px] border border-hair-strong bg-paper pl-10 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-violet"
             />
           </div>
         </label>

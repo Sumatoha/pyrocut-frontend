@@ -3,8 +3,8 @@ import type { StatusTone } from '@/lib/status';
 
 const colorFor: Record<StatusTone, string> = {
   idle: 'text-faint',
-  active: 'text-ember',
-  ready: 'text-ember',
+  active: 'text-violet',
+  ready: 'text-violet',
   failed: 'text-muted',
 };
 

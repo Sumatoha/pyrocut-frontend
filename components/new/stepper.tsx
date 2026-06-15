@@ -14,8 +14,8 @@ export function Stepper({ current }: { current: number }) {
             <span
               className={cn(
                 'grid size-7 shrink-0 place-items-center rounded-full border text-[11px] font-medium transition-colors',
-                done && 'ember-grad border-transparent text-white',
-                active && 'border-ember text-ember',
+                done && 'brand-grad border-transparent text-white',
+                active && 'border-violet text-violet',
                 !done && !active && 'border-hair-strong text-faint',
               )}
             >
@@ -33,7 +33,7 @@ export function Stepper({ current }: { current: number }) {
               <span
                 className={cn(
                   'ml-1 h-px flex-1',
-                  done ? 'bg-ember' : 'bg-hair',
+                  done ? 'bg-violet' : 'bg-hair',
                 )}
               />
             )}

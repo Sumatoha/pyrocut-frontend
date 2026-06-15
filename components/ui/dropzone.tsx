@@ -52,13 +52,13 @@ export function Dropzone({
       }}
       className={cn(
         'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-win)] border border-dashed px-6 py-8 text-center transition-colors',
-        over ? 'border-ember bg-ember-soft/50' : 'border-hair-strong bg-wash',
+        over ? 'border-violet bg-violet-soft/50' : 'border-hair-strong bg-wash',
         disabled && 'cursor-not-allowed opacity-50',
         className,
       )}
     >
       <UploadCloud
-        className={cn('size-6', over ? 'text-ember' : 'text-muted')}
+        className={cn('size-6', over ? 'text-violet' : 'text-muted')}
       />
       <p className="text-[13px] text-ink2">{hint}</p>
       <p className="microlabel">png · jpg · svg</p>

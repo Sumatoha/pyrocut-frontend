@@ -90,7 +90,7 @@ export function StepGenerate({
           on the free plan your video carries a small pyrocut watermark.{' '}
           <a
             href="/app/billing"
-            className="text-ember underline underline-offset-2"
+            className="text-violet underline underline-offset-2"
           >
             upgrade to remove it →
           </a>

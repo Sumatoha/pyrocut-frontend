@@ -11,11 +11,11 @@ export function EmptyState() {
         className="win-surface relative mx-auto mb-8 flex aspect-video max-w-[440px] items-center justify-center overflow-hidden rounded-[var(--radius-card)] shadow-win"
         style={{
           background:
-            'radial-gradient(120% 80% at 30% 0%, #3a1f12 0%, transparent 55%), radial-gradient(140% 90% at 90% 100%, #241a3a 0%, transparent 60%), linear-gradient(180deg, #17141f, #100e16)',
+            'radial-gradient(130% 90% at 78% 8%, #2f2360 0%, transparent 58%), radial-gradient(120% 80% at 18% 100%, #3a1f12 0%, transparent 55%), linear-gradient(180deg, #17141f, #100e16)',
         }}
       >
         <RecTimer time="00:00:00" className="absolute left-4 top-4" />
-        <Sparkles className="size-9 text-ember" />
+        <Sparkles className="size-9 text-violet2" />
       </div>
 
       <h1 className="display text-4xl text-ink sm:text-5xl">

@@ -59,7 +59,7 @@ export function VideoDetail({ id }: { id: string }) {
       <div className="py-20 text-center">
         <h1 className="display text-2xl text-ink">video not found</h1>
         <p className="mt-2 text-sm text-muted">{error}</p>
-        <Link href="/app" className="mt-6 inline-block text-sm text-ember underline">
+        <Link href="/app" className="mt-6 inline-block text-sm text-violet underline">
           back to videos
         </Link>
       </div>
@@ -212,7 +212,7 @@ export function VideoDetail({ id }: { id: string }) {
                 <a
                   href={mp4Url ?? undefined}
                   download
-                  className="inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13px] text-white ember-grad"
+                  className="inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13px] text-white brand-grad"
                 >
                   <Download className="size-4" /> download mp4
                 </a>

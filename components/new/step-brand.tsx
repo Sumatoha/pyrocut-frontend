@@ -160,7 +160,7 @@ export function StepBrand({
                 setBrand((b) => (b ? { ...b, h1: e.target.value } : b))
               }
               placeholder="your landing h1"
-              className="mt-1.5 h-10 w-full rounded-[12px] border border-hair-strong bg-paper px-3 text-sm text-ink outline-none focus:border-ember"
+              className="mt-1.5 h-10 w-full rounded-[12px] border border-hair-strong bg-paper px-3 text-sm text-ink outline-none focus:border-violet"
             />
           </label>
 
@@ -172,7 +172,7 @@ export function StepBrand({
                 setBrand((b) => (b ? { ...b, cta: e.target.value } : b))
               }
               placeholder="start free trial"
-              className="mt-1.5 h-10 w-full rounded-[12px] border border-hair-strong bg-paper px-3 text-sm text-ink outline-none focus:border-ember"
+              className="mt-1.5 h-10 w-full rounded-[12px] border border-hair-strong bg-paper px-3 text-sm text-ink outline-none focus:border-violet"
             />
           </label>
         </div>
@@ -182,8 +182,8 @@ export function StepBrand({
         <div className="rounded-[var(--radius-card)] border border-hair bg-wash/60 p-5">
           <span className="microlabel">how we read your vibe</span>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Chip tone="ember">{brand.analysis.brightness}</Chip>
-            <Chip tone="ember">{brand.analysis.energy}</Chip>
+            <Chip tone="violet">{brand.analysis.brightness}</Chip>
+            <Chip tone="violet">{brand.analysis.energy}</Chip>
             {brand.analysis.mood.map((m) => (
               <Chip key={m}>{m}</Chip>
             ))}

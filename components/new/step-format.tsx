@@ -105,7 +105,7 @@ export function StepFormat({
                 className={cn(
                   'flex items-center gap-4 rounded-[var(--radius-card)] border p-5 text-left transition-colors',
                   sel
-                    ? 'border-ember bg-ember-soft/40'
+                    ? 'border-violet bg-violet-soft/50'
                     : 'border-hair hover:border-hair-strong',
                 )}
               >
@@ -114,7 +114,7 @@ export function StepFormat({
                     className={cn(
                       'rounded-[6px] border-2 transition-colors',
                       info.box,
-                      sel ? 'border-ember bg-win' : 'border-hair-strong bg-wash',
+                      sel ? 'border-violet bg-win' : 'border-hair-strong bg-wash',
                     )}
                   />
                 </span>
@@ -149,7 +149,7 @@ export function StepFormat({
                 className={cn(
                   'flex flex-col gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors',
                   sel
-                    ? 'border-ember bg-ember-soft/40'
+                    ? 'border-violet bg-violet-soft/50'
                     : 'border-hair hover:border-hair-strong',
                 )}
               >
@@ -159,7 +159,7 @@ export function StepFormat({
                       key={i}
                       className={cn(
                         'flex-1 rounded-sm',
-                        sel ? 'ember-grad' : 'bg-white/25',
+                        sel ? 'brand-grad' : 'bg-white/25',
                       )}
                       style={{ height: `${h}%` }}
                     />
@@ -186,7 +186,7 @@ export function StepFormat({
           onChange={(e) => setPrompt(e.target.value)}
           rows={2}
           placeholder="e.g. ‘open on the pricing page, end on the cta’"
-          className="mt-1.5 w-full resize-none rounded-[var(--radius-win)] border border-hair-strong bg-paper p-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-ember"
+          className="mt-1.5 w-full resize-none rounded-[var(--radius-win)] border border-hair-strong bg-paper p-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-violet"
         />
       </label>
 

@@ -26,7 +26,7 @@ export function Scrubber({
       aria-valuemax={100}
     >
       <div
-        className="absolute inset-y-0 left-0 ember-grad rounded-full transition-[width] duration-700 ease-out"
+        className="absolute inset-y-0 left-0 brand-grad rounded-full transition-[width] duration-700 ease-out"
         style={{ width: `${pct}%` }}
       />
       {active && (
@@ -41,7 +41,7 @@ export function Scrubber({
           />
           {/* playhead */}
           <div
-            className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember shadow-[0_0_0_4px_rgba(255,90,31,0.18)] transition-[left] duration-700 ease-out"
+            className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet shadow-[0_0_0_4px_rgba(109,74,255,0.2)] transition-[left] duration-700 ease-out"
             style={{ left: `${pct}%` }}
           />
         </>

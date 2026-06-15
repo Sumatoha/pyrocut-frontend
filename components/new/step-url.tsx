@@ -49,7 +49,7 @@ export function StepUrl({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="acme.dev"
-            className="h-14 w-full rounded-[var(--radius-win)] border border-hair-strong bg-paper pl-11 pr-4 text-base text-ink outline-none transition-colors placeholder:text-faint focus:border-ember"
+            className="h-14 w-full rounded-[var(--radius-win)] border border-hair-strong bg-paper pl-11 pr-4 text-base text-ink outline-none transition-colors placeholder:text-faint focus:border-violet"
           />
         </div>
       </label>
@@ -61,7 +61,7 @@ export function StepUrl({
           onChange={(e) => setBrief(e.target.value)}
           rows={3}
           placeholder="what should the video emphasize? e.g. ‘speed and the live dashboard’"
-          className="mt-1.5 w-full resize-none rounded-[var(--radius-win)] border border-hair-strong bg-paper p-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-ember"
+          className="mt-1.5 w-full resize-none rounded-[var(--radius-win)] border border-hair-strong bg-paper p-4 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-violet"
         />
       </label>
 

@@ -20,8 +20,8 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    'ember-grad text-white shadow-[0_8px_24px_-10px_rgba(255,90,31,0.6)] ' +
-    'hover:-translate-y-px hover:shadow-[0_14px_32px_-12px_rgba(255,90,31,0.7)]',
+    'brand-grad text-white shadow-[0_8px_24px_-10px_rgba(109,74,255,0.55)] ' +
+    'hover:-translate-y-px hover:shadow-[0_16px_34px_-12px_rgba(109,74,255,0.7)]',
   dark: 'bg-ink text-white hover:bg-[#1c1a22]',
   ghost: 'bg-transparent text-ink hover:bg-black/[0.05]',
   outline:
