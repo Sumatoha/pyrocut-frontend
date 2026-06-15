@@ -143,7 +143,8 @@ export const api = {
     request<{ ok: boolean }>(`/videos/${id}`, { method: 'DELETE' }),
 
   // POST /api/billing/checkout { plan } -> { url }
-  checkout: (plan: Plan) =>
+  // 'free' нельзя купить — бэк-схема CheckoutSchema исключает его (zod 400).
+  checkout: (plan: Exclude<Plan, 'free'>) =>
     request<{ url: string }>('/billing/checkout', {
       method: 'POST',
       body: JSON.stringify({ plan }),

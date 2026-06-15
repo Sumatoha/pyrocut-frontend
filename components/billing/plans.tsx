@@ -78,6 +78,9 @@ export function Plans({
 
   async function upgrade(plan: Plan) {
     if (plan === current) return;
+    // free — это даунгрейд/отмена подписки, не checkout (Polar не оформляет $0).
+    // Narrowing ниже даёт api.checkout тип Exclude<Plan,'free'> без каста.
+    if (plan === 'free') return;
     setLoading(plan);
     if (DEMO_MODE) {
       toast.toast('checkout is disabled in demo mode');
@@ -214,14 +217,16 @@ function PlanColumn({
         variant={isCurrent ? 'outline' : dark ? 'primary' : 'dark'}
         className="w-full"
         loading={loading}
-        disabled={isCurrent}
+        disabled={isCurrent || card.id === 'free'}
         onClick={onSelect}
       >
         {isCurrent
           ? 'current plan'
-          : isUpgrade
-            ? `upgrade to ${card.name}`
-            : `switch to ${card.name}`}
+          : card.id === 'free'
+            ? 'free forever'
+            : isUpgrade
+              ? `upgrade to ${card.name}`
+              : `switch to ${card.name}`}
       </Button>
 
       <ul className="space-y-2.5">
