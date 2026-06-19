@@ -66,19 +66,30 @@ const PRESET_INFO: Record<
   },
 };
 
-/** Шаг 3 — формат + пресет монтажа + опц. бриф. */
+/** Сколько вариаций за раз. 1 = точный одиночный пресет; 2-6 = батч с авто-разнообразием. */
+const COUNTS = [1, 2, 3, 4, 5, 6] as const;
+
+/** Шаг 3 — формат + кол-во вариаций (+ пресет для одиночной) + опц. бриф. */
 export function StepFormat({
   onBack,
   onGenerate,
   generating,
 }: {
   onBack: () => void;
-  onGenerate: (format: Format, preset: Preset, prompt: string) => void;
+  onGenerate: (
+    format: Format,
+    count: number,
+    preset: Preset,
+    prompt: string,
+  ) => void;
   generating: boolean;
 }) {
   const [format, setFormat] = useState<Format>('16:9');
+  const [count, setCount] = useState<number>(3);
   const [preset, setPreset] = useState<Preset>('dolly');
   const [prompt, setPrompt] = useState('');
+
+  const single = count === 1;
 
   return (
     <div className="mx-auto max-w-[760px] space-y-8">
@@ -133,7 +144,39 @@ export function StepFormat({
         </div>
       </fieldset>
 
-      {/* preset */}
+      {/* how many variations */}
+      <fieldset>
+        <legend className="microlabel mb-3">how many variations</legend>
+        <div className="flex flex-wrap gap-2">
+          {COUNTS.map((n) => {
+            const sel = count === n;
+            return (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setCount(n)}
+                aria-pressed={sel}
+                className={cn(
+                  'h-11 w-11 rounded-[12px] border font-[family-name:var(--font-mono)] text-sm transition-colors',
+                  sel
+                    ? 'border-violet bg-violet-soft/50 text-violet'
+                    : 'border-hair text-ink2 hover:border-hair-strong',
+                )}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-[12px] leading-snug text-muted">
+          {single
+            ? 'one cut — you pick the exact style below.'
+            : `we’ll auto-pick ${count} distinct cuts — different styles & structures, all on your brand.`}
+        </p>
+      </fieldset>
+
+      {/* preset — только для одиночной генерации; батч сам подбирает разнообразие */}
+      {single && (
       <fieldset>
         <legend className="microlabel mb-3">edit preset</legend>
         <div className="grid gap-4 sm:grid-cols-3">
@@ -178,6 +221,7 @@ export function StepFormat({
           })}
         </div>
       </fieldset>
+      )}
 
       <label className="block">
         <span className="microlabel">extra direction for this cut — optional</span>
@@ -196,9 +240,10 @@ export function StepFormat({
         </Button>
         <Button
           loading={generating}
-          onClick={() => onGenerate(format, preset, prompt.trim())}
+          onClick={() => onGenerate(format, count, preset, prompt.trim())}
         >
-          <Sparkles className="size-4" /> generate video
+          <Sparkles className="size-4" />{' '}
+          {single ? 'generate video' : `generate ${count} variations`}
         </Button>
       </div>
     </div>

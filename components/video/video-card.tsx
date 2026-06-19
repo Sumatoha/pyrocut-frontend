@@ -72,10 +72,17 @@ export function VideoCard({
           <VideoThumb video={video} />
         </Link>
 
+        {video.variationTitle && (
+          <p className="truncate px-2 pt-2.5 text-[13px] text-ink">
+            {video.variationTitle}
+          </p>
+        )}
+
         <div className="flex items-center justify-between gap-2 px-1.5 pb-1 pt-3">
           <div className="flex flex-wrap gap-1.5">
             <Chip>{video.format}</Chip>
             <Chip tone="ember">{video.preset}</Chip>
+            {video.recipe && <Chip>{video.recipe}</Chip>}
           </div>
 
           <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">

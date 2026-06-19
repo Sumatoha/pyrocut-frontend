@@ -89,10 +89,35 @@ export function Wizard({ plan }: { plan: Plan }) {
     setStep(2);
   }
 
-  async function handleGenerate(f: Format, preset: Preset, prompt: string) {
+  async function handleGenerate(
+    f: Format,
+    count: number,
+    preset: Preset,
+    prompt: string,
+  ) {
     setFormat(f);
     setGenerating(true);
     try {
+      if (count >= 2) {
+        // Батч: планировщик подбирает N взаимно-различных вариаций. Они появятся
+        // в гриде /app и обновляются live через realtime — ведём туда.
+        if (DEMO_MODE) {
+          toast.success(`generating ${count} variations (demo)`);
+        } else {
+          if (!projectId) throw new Error('no project');
+          await api.createVideosBatch({
+            projectId,
+            format: f,
+            count,
+            prompt: prompt || undefined,
+          });
+          toast.success('on it', `composing ${count} variations`);
+        }
+        router.push('/app');
+        return;
+      }
+
+      // Одиночная генерация с точным пресетом — остаёмся в визарде (step 4).
       if (DEMO_MODE) {
         setVideoId(`demo-video-${Date.now()}`);
       } else {

@@ -84,6 +84,20 @@ export function StepBrand({
         : b,
     );
 
+  // accent роли из analysis.palette — то, чем реально красится видео.
+  const setPaletteRole = (role: 'accent' | 'accentAlt', color: string) =>
+    setBrand((b) =>
+      b && b.analysis
+        ? {
+            ...b,
+            analysis: {
+              ...b.analysis,
+              palette: { ...b.analysis.palette, [role]: color },
+            },
+          }
+        : b,
+    );
+
   return (
     <div className="mx-auto max-w-[760px] space-y-7">
       <div className="text-center">
@@ -192,27 +206,98 @@ export function StepBrand({
           <div className="mt-4 flex flex-wrap gap-3">
             {(
               [
-                ['bg', brand.analysis.palette.bg],
-                ['surface', brand.analysis.palette.surface],
-                ['text', brand.analysis.palette.text],
-                ['accent', brand.analysis.palette.accent],
-                ['accent 2', brand.analysis.palette.accentAlt],
-              ] as [string, string | null][]
+                ['bg', null, brand.analysis.palette.bg],
+                ['surface', null, brand.analysis.palette.surface],
+                ['text', null, brand.analysis.palette.text],
+                ['accent', 'accent', brand.analysis.palette.accent],
+                ['accent 2', 'accentAlt', brand.analysis.palette.accentAlt],
+              ] as [string, 'accent' | 'accentAlt' | null, string | null][]
             )
-              .filter((r): r is [string, string] => r[1] !== null)
-              .map(([role, color]) => (
-                <span key={role} className="flex items-center gap-1.5">
-                  <span
-                    className="block size-6 rounded-[7px] border border-hair shadow-sm"
-                    style={{ background: color }}
-                    title={color}
-                  />
-                  <span className="font-[family-name:var(--font-mono)] text-[11px] text-muted">
-                    {role}
+              .filter(
+                (r): r is [string, 'accent' | 'accentAlt' | null, string] =>
+                  r[2] !== null,
+              )
+              .map(([role, editKey, color]) =>
+                editKey ? (
+                  <label
+                    key={role}
+                    className="group flex cursor-pointer items-center gap-1.5"
+                    title={`${color} — click to edit`}
+                  >
+                    <span
+                      className="relative block size-6 rounded-[7px] border border-hair shadow-sm transition-transform group-hover:scale-105"
+                      style={{ background: color }}
+                    >
+                      <input
+                        type="color"
+                        value={color}
+                        onChange={(e) => setPaletteRole(editKey, e.target.value)}
+                        className="absolute inset-0 cursor-pointer opacity-0"
+                        aria-label={`${role} color`}
+                      />
+                    </span>
+                    <span className="font-[family-name:var(--font-mono)] text-[11px] text-muted">
+                      {role}
+                    </span>
+                  </label>
+                ) : (
+                  <span key={role} className="flex items-center gap-1.5">
+                    <span
+                      className="block size-6 rounded-[7px] border border-hair shadow-sm"
+                      style={{ background: color }}
+                      title={color}
+                    />
+                    <span className="font-[family-name:var(--font-mono)] text-[11px] text-muted">
+                      {role}
+                    </span>
                   </span>
-                </span>
-              ))}
+                ),
+              )}
           </div>
+
+          {brand.analysis.story?.hook && (
+            <p className="mt-4 text-[14px] italic leading-snug text-ink">
+              “{brand.analysis.story.hook}”
+            </p>
+          )}
+
+          {brand.analysis.metrics.length > 0 && (
+            <div className="mt-4">
+              <span className="microlabel">numbers we’ll animate</span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {brand.analysis.metrics.map((m, i) => (
+                  <span
+                    key={`${m.value}-${i}`}
+                    className="inline-flex items-baseline gap-1.5 rounded-full border border-hair bg-paper px-2.5 py-1"
+                  >
+                    <span className="font-[family-name:var(--font-mono)] text-[13px] text-ink">
+                      {m.value}
+                    </span>
+                    <span className="text-[11px] text-muted">{m.label}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {brand.analysis.visuals.some((v) => v.cropPath) && (
+            <div className="mt-4">
+              <span className="microlabel">real product we found — goes in the video</span>
+              <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                {brand.analysis.visuals
+                  .filter((v) => v.cropPath)
+                  .slice(0, 8)
+                  .map((v, i) => (
+                    <CropThumb
+                      key={`${v.cropPath}-${i}`}
+                      path={v.cropPath}
+                      label={v.label}
+                      hero={v.hero}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
 
           {brand.analysis.motion && (
             <p className="mt-4 text-[12px] leading-snug text-muted">
@@ -220,8 +305,8 @@ export function StepBrand({
             </p>
           )}
           <p className="mt-2 text-[11px] leading-snug text-faint">
-            this is the read your video is built from. tweak the palette above to
-            steer it.
+            this is the read your video is built from — click accent to recolor
+            it.
           </p>
         </div>
       )}
@@ -245,6 +330,46 @@ export function StepBrand({
           <ArrowRight className="size-4" />
         </Button>
       </div>
+    </div>
+  );
+}
+
+/** Превью реального кропа продукта (приватный bucket → signed URL). */
+function CropThumb({
+  path,
+  label,
+  hero,
+}: {
+  path: string | null;
+  label: string;
+  hero: boolean;
+}) {
+  const url = useSignedUrl(BUCKET_ASSETS, path);
+  return (
+    <div
+      className={cn(
+        'win-surface relative aspect-[4/3] overflow-hidden rounded-[10px]',
+        hero && 'ring-1 ring-violet',
+      )}
+      title={label}
+    >
+      {url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={url}
+          alt={label}
+          className="absolute inset-0 size-full object-cover object-top"
+        />
+      ) : (
+        <div className="absolute inset-0 grid place-items-center text-[10px] text-white/40">
+          …
+        </div>
+      )}
+      {hero && (
+        <span className="absolute left-1 top-1 rounded-full bg-violet px-1.5 py-0.5 font-[family-name:var(--font-mono)] text-[9px] text-white">
+          hero
+        </span>
+      )}
     </div>
   );
 }

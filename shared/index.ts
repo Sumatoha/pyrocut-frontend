@@ -38,6 +38,22 @@ export const VIDEO_PRESETS = [
 ] as const;
 export type VideoPreset = (typeof VIDEO_PRESETS)[number];
 
+/**
+ * Рецепт = СТРУКТУРНЫЙ каркас ролика (какие сцены, в каком порядке, что в фокусе).
+ * Это ось РАЗНООБРАЗИЯ вариаций: пресет задаёт СТИЛЬ/энергию, рецепт — СТРУКТУРУ.
+ * Планировщик батча назначает разным вариациям разные рецепты, чтобы они были
+ * реально непохожи. (зеркало enums.ts)
+ */
+export const VIDEO_RECIPES = [
+  'dashboard-zoom',
+  'product-scroll',
+  'kinetic-type',
+  'data-metrics',
+  'editorial',
+  'snap-montage',
+] as const;
+export type VideoRecipe = (typeof VIDEO_RECIPES)[number];
+
 export const VIDEO_STATUSES = [
   'queued',
   'generating',
@@ -62,6 +78,21 @@ export const FORMAT_DIMENSIONS: Record<
   '9:16': { width: 1080, height: 1920 },
 };
 
+/**
+ * Дефолтный рецепт-структура под каждый пресет (одиночная генерация без планировщика).
+ * Планировщик батча может назначить другой рецепт ради разнообразия. (зеркало enums.ts)
+ */
+export const PRESET_RECIPE: Record<VideoPreset, VideoRecipe> = {
+  dolly: 'dashboard-zoom',
+  snapcut: 'snap-montage',
+  editorial: 'editorial',
+  neon: 'snap-montage',
+  kinetic: 'kinetic-type',
+  glass: 'product-scroll',
+  terminal: 'data-metrics',
+  liquid: 'product-scroll',
+};
+
 // ---- entities -------------------------------------------------------------
 
 export const BRIGHTNESS = ['dark', 'mixed', 'light'] as const;
@@ -84,6 +115,55 @@ export interface PaletteRoles {
 }
 
 /**
+ * Тип визуального узла лендинга. dashboard/product_shot/chart можно ВСТАВИТЬ кропом
+ * и анимировать (зум/scroll/спотлайт) вместо фейк-панели. (зеркало schemas.ts)
+ */
+export const VISUAL_KINDS = [
+  'dashboard',
+  'product_shot',
+  'chart',
+  'device_frame',
+  'logo_strip',
+  'illustration',
+  'other',
+] as const;
+export type VisualKind = (typeof VISUAL_KINDS)[number];
+
+/** Прямоугольник на full-page скрине (px). */
+export interface BBox {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Найденный на лендинге визуальный элемент. bbox — из DOM; kind/label/hero — из
+ * vision-классификации; cropPath — storage-путь кропа (bucket assets) от crop.ts.
+ */
+export interface Visual {
+  kind: VisualKind;
+  label: string;
+  bbox: BBox | null;
+  cropPath: string | null;
+  hero: boolean;
+}
+
+/** Числовая метрика-стат с лендинга — для счётчиков/бар-чартов в видео. */
+export interface Metric {
+  /** Значение как на странице: «10x», «99.9%», «2M+». */
+  value: string;
+  /** Подпись: «faster», «uptime», «developers». */
+  label: string;
+}
+
+/** Нарратив-каркас ролика: хук + биты сцен. */
+export interface Story {
+  hook: string;
+  beats: string[];
+}
+
+/**
  * brand.analysis — структурный creative-brief из vision-прохода над full-page
  * скрином. Источник правды о ВАЙБЕ лендинга (палитра по ролям + язык движения).
  * null, если анализ не удался — генерация откатывается на сырые colors/тексты.
@@ -100,6 +180,12 @@ export interface BrandAnalysis {
   motion: string | null;
   /** Вайб типографики. */
   typography: string | null;
+  /** Реальные визуалы лендинга (дашборды/продукт-шоты/графики) — «что анимировать». */
+  visuals: Visual[];
+  /** Числовые метрики со страницы — для счётчиков/бар-чартов. */
+  metrics: Metric[];
+  /** Нарратив-каркас (хук + биты) — драйвер сториборда. */
+  story: Story | null;
 }
 
 /**
@@ -159,6 +245,10 @@ export interface Video {
   userId: string;
   format: VideoFormat;
   preset: VideoPreset;
+  /** Структурный рецепт вариации (из plan); null для одиночных видео старого флоу. */
+  recipe: VideoRecipe | null;
+  /** Имя вариации для UI (из plan.title); null если не батч. */
+  variationTitle: string | null;
   prompt: string | null;
   status: VideoStatus;
   watermark: boolean;
@@ -193,6 +283,15 @@ export interface CreateVideoInput {
   projectId: string;
   format: VideoFormat;
   preset: VideoPreset;
+  prompt?: string;
+}
+
+/** POST /videos/batch — N взаимно-различных вариаций по одному проекту (планировщик). */
+export interface CreateVideosBatchInput {
+  projectId: string;
+  format: VideoFormat;
+  /** Сколько вариаций (2-6). */
+  count: number;
   prompt?: string;
 }
 

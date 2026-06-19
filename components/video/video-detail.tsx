@@ -12,7 +12,7 @@ import {
   Ratio,
   Play,
 } from 'lucide-react';
-import { PRESETS, type Format, type Preset } from '@pyrocut/shared';
+import type { Format, Preset } from '@pyrocut/shared';
 import { cn } from '@/lib/cn';
 import { api, ApiError } from '@/lib/client/api';
 import { DEMO_MODE } from '@/lib/client/demo';
@@ -38,6 +38,9 @@ import { CompositionPreview } from './composition-preview';
 
 const isReal = (p?: string | null): p is string =>
   Boolean(p) && p !== 'about:blank';
+
+/** Сколько вариаций создаёт кнопка remix. */
+const REMIX_COUNT = 3;
 
 export function VideoDetail({ id }: { id: string }) {
   const router = useRouter();
@@ -115,8 +118,35 @@ export function VideoDetail({ id }: { id: string }) {
     }
   }
 
-  const nextPreset =
-    PRESETS[(PRESETS.indexOf(video.preset) + 1) % PRESETS.length];
+  // Ремикс: батч N взаимно-различных вариаций (планировщик подбирает стили/рецепты).
+  async function makeBatch() {
+    if (!video) return;
+    setVarying(true);
+    try {
+      if (DEMO_MODE) {
+        router.push('/app');
+        return;
+      }
+      await api.createVideosBatch({
+        projectId: video.projectId,
+        format: video.format,
+        count: REMIX_COUNT,
+      });
+      toast.success('on it', `composing ${REMIX_COUNT} fresh cuts`);
+      router.push('/app');
+    } catch (e) {
+      setVarying(false);
+      if (e instanceof ApiError && e.isPaymentRequired) {
+        router.push('/app/billing');
+        return;
+      }
+      toast.error(
+        'could not remix',
+        e instanceof ApiError ? e.message : undefined,
+      );
+    }
+  }
+
   const otherFormat: Format = video.format === '16:9' ? '9:16' : '16:9';
 
   async function copyShare() {
@@ -140,6 +170,7 @@ export function VideoDetail({ id }: { id: string }) {
         <div className="flex items-center gap-2">
           <Chip>{video.format}</Chip>
           <Chip tone="ember">{video.preset}</Chip>
+          {video.recipe && <Chip>{video.recipe}</Chip>}
           <StatusBadge meta={meta} className="ml-1" />
         </div>
       </div>
@@ -239,9 +270,9 @@ export function VideoDetail({ id }: { id: string }) {
               size="sm"
               className="w-full justify-start"
               loading={varying}
-              onClick={() => makeVariation(video.format, nextPreset)}
+              onClick={makeBatch}
             >
-              <Shuffle className="size-4" /> try {nextPreset} preset
+              <Shuffle className="size-4" /> remix · {REMIX_COUNT} fresh cuts
             </Button>
           </div>
 
@@ -250,9 +281,10 @@ export function VideoDetail({ id }: { id: string }) {
               {siblings.map((s) => (
                 <Link key={s.id} href={`/app/v/${s.id}`} className="group block">
                   <VideoThumb video={s} className="!aspect-video" />
-                  <div className="mt-1.5 flex gap-1">
+                  <div className="mt-1.5 flex flex-wrap gap-1">
                     <Chip>{s.format}</Chip>
                     <Chip tone="ember">{s.preset}</Chip>
+                    {s.recipe && <Chip>{s.recipe}</Chip>}
                   </div>
                 </Link>
               ))}

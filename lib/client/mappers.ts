@@ -23,12 +23,16 @@ export function mapProjectRow(r: Row): Project {
 }
 
 export function mapVideoRow(r: Row): Video {
+  const plan = (r.plan as { recipe?: string; title?: string } | null) ?? null;
   return {
     id: r.id as string,
     projectId: r.project_id as string,
     userId: r.user_id as string,
     format: r.format as Video['format'],
     preset: r.preset as Video['preset'],
+    // recipe/variationTitle живут в videos.plan jsonb (бэк мапит их в mapVideo).
+    recipe: (plan?.recipe as Video['recipe']) ?? null,
+    variationTitle: (plan?.title as string | null) ?? null,
     prompt: (r.prompt as string | null) ?? null,
     status: r.status as Video['status'],
     watermark: Boolean(r.watermark),

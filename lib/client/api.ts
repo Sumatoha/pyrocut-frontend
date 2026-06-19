@@ -7,6 +7,7 @@ import type {
   Brand,
   CreateProjectInput,
   CreateVideoInput,
+  CreateVideosBatchInput,
   Plan,
   Project,
   Video,
@@ -128,6 +129,13 @@ export const api = {
   // POST /api/videos -> Video (queued) + enqueue pipeline
   createVideo: (input: CreateVideoInput) =>
     request<Video>('/videos', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  // POST /api/videos/batch -> Video[] (планировщик: N взаимно-различных вариаций)
+  createVideosBatch: (input: CreateVideosBatchInput) =>
+    request<Video[]>('/videos/batch', {
       method: 'POST',
       body: JSON.stringify(input),
     }),
