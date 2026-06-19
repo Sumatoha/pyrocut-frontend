@@ -47,7 +47,12 @@ export function AccountMenu({
         aria-expanded={open}
         aria-label="account"
         title={email}
-        className="grid size-9 place-items-center rounded-full bg-ink text-[13px] font-medium text-white transition-transform hover:scale-105"
+        className={cn(
+          'grid size-9 place-items-center rounded-full bg-ink text-[13px] font-medium text-white',
+          'ring-2 ring-transparent transition-all duration-300 ease-[var(--ease-spring)]',
+          'hover:scale-105 hover:ring-violet-soft active:scale-95',
+          open && 'ring-violet-soft',
+        )}
       >
         {initial}
       </button>
@@ -55,7 +60,7 @@ export function AccountMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-11 w-60 origin-top-right animate-[popin_.12s_ease] rounded-[16px] border border-hair bg-paper p-2 shadow-pop"
+          className="absolute right-0 top-12 w-60 origin-top-right animate-[popin_.2s_var(--ease-out-expo)] rounded-[16px] border border-hair bg-paper p-2 shadow-pop"
         >
           <div className="px-3 py-2.5">
             <p className="truncate text-[13px] text-ink">{email ?? 'signed in'}</p>

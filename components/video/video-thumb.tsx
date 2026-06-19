@@ -41,7 +41,7 @@ export function VideoThumb({
         <img
           src={thumbUrl}
           alt=""
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:scale-[1.06]"
         />
       )}
 
@@ -55,6 +55,12 @@ export function VideoThumb({
         }}
       />
 
+      {/* нижний скрим — читаемость статуса/скраббера поверх любого кадра */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/45 to-transparent opacity-80" />
+
+      {/* диагональный блик при наведении */}
+      <span className="sheen -translate-x-[130%] transition-transform duration-[850ms] ease-[var(--ease-out-soft)] group-hover:translate-x-[130%]" />
+
       {/* верх: статус / REC */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
         <StatusBadge meta={meta} onDark />
@@ -64,7 +70,7 @@ export function VideoThumb({
       {/* центр: play для готового */}
       {video.status === 'ready' && (
         <div className="absolute inset-0 grid place-items-center">
-          <span className="grid size-12 place-items-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-transform group-hover:scale-110">
+          <span className="grid size-12 place-items-center rounded-full bg-white/15 text-white shadow-[0_8px_24px_-8px_rgba(0,0,0,0.6)] ring-1 ring-white/25 backdrop-blur-md transition-all duration-300 ease-[var(--ease-spring)] group-hover:scale-110 group-hover:bg-white/25">
             <Play className="size-5 translate-x-px fill-white" />
           </span>
         </div>

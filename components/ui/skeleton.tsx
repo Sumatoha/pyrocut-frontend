@@ -8,7 +8,7 @@ export function Skeleton({
   return (
     <div
       className={cn(
-        'animate-[var(--animate-skeleton)] rounded-[10px] bg-black/[0.06]',
+        'skeleton-sweep animate-[var(--animate-skeleton)] rounded-[10px]',
         className,
       )}
       {...props}

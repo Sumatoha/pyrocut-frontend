@@ -13,9 +13,10 @@ export function Stepper({ current }: { current: number }) {
           <li key={label} className="flex flex-1 items-center gap-2">
             <span
               className={cn(
-                'grid size-7 shrink-0 place-items-center rounded-full border text-[11px] font-medium transition-colors',
+                'grid size-7 shrink-0 place-items-center rounded-full border text-[11px] font-medium',
+                'transition-all duration-[400ms] ease-[var(--ease-spring)]',
                 done && 'brand-grad border-transparent text-white',
-                active && 'border-violet text-violet',
+                active && 'scale-110 border-violet text-violet shadow-[0_0_0_4px_var(--color-violet-soft)]',
                 !done && !active && 'border-hair-strong text-faint',
               )}
             >
@@ -32,7 +33,7 @@ export function Stepper({ current }: { current: number }) {
             {i < STEPS.length - 1 && (
               <span
                 className={cn(
-                  'ml-1 h-px flex-1',
+                  'ml-1 h-px flex-1 transition-colors duration-500',
                   done ? 'bg-violet' : 'bg-hair',
                 )}
               />

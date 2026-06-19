@@ -14,20 +14,23 @@ export interface ButtonProps
 
 const base =
   'inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap rounded-full ' +
-  'transition-[transform,background,box-shadow,border-color,opacity] duration-150 ' +
-  'disabled:opacity-50 disabled:pointer-events-none active:translate-y-0 ' +
+  'transition-[transform,background-position,box-shadow,border-color,color,opacity] ' +
+  'duration-300 ease-[var(--ease-out-expo)] ' +
+  'disabled:opacity-50 disabled:pointer-events-none ' +
+  'active:scale-[0.97] active:duration-100 ' +
   "font-[family-name:var(--font-mono)]";
 
 const variants: Record<Variant, string> = {
   primary:
-    'brand-grad text-white shadow-[0_8px_24px_-10px_rgba(109,74,255,0.55)] ' +
-    'hover:-translate-y-px hover:shadow-[0_16px_34px_-12px_rgba(109,74,255,0.7)]',
-  dark: 'bg-ink text-white hover:bg-[#1c1a22]',
+    'brand-grad bg-[length:180%_auto] bg-left text-white ' +
+    'shadow-[0_8px_24px_-10px_rgba(109,74,255,0.55)] ' +
+    'hover:bg-right hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-12px_rgba(109,74,255,0.7)]',
+  dark: 'bg-ink text-white hover:-translate-y-0.5 hover:bg-[#1c1a22] hover:shadow-pop',
   ghost: 'bg-transparent text-ink hover:bg-black/[0.05]',
   outline:
-    'bg-paper text-ink border border-hair-strong hover:bg-black/[0.03]',
+    'bg-paper text-ink border border-hair-strong hover:border-ink/25 hover:bg-black/[0.03] hover:-translate-y-0.5',
   danger:
-    'bg-transparent text-ink border border-hair-strong hover:border-ember hover:text-ember',
+    'bg-transparent text-ink border border-hair-strong hover:border-ember hover:bg-ember-soft/40 hover:text-ember',
 };
 
 const sizes: Record<Size, string> = {

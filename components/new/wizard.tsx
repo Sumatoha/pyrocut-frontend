@@ -147,41 +147,44 @@ export function Wizard({ plan }: { plan: Plan }) {
     <div className="space-y-10 py-2">
       <Stepper current={step} />
 
-      {step === 0 && <StepUrl onSubmit={handleUrl} loading={creating} />}
+      {/* key={step} перемонтирует контент → каждый шаг плавно появляется */}
+      <div key={step} className="rise-in">
+        {step === 0 && <StepUrl onSubmit={handleUrl} loading={creating} />}
 
-      {step === 1 && (
-        <StepBrand
-          project={project}
-          url={url}
-          uploading={uploading}
-          onUpload={handleUpload}
-          onConfirm={handleConfirmBrand}
-          onBack={() => {
-            setProjectId(null);
-            setStep(0);
-          }}
-        />
-      )}
+        {step === 1 && (
+          <StepBrand
+            project={project}
+            url={url}
+            uploading={uploading}
+            onUpload={handleUpload}
+            onConfirm={handleConfirmBrand}
+            onBack={() => {
+              setProjectId(null);
+              setStep(0);
+            }}
+          />
+        )}
 
-      {step === 2 && (
-        <StepFormat
-          generating={generating}
-          onBack={() => setStep(1)}
-          onGenerate={handleGenerate}
-        />
-      )}
+        {step === 2 && (
+          <StepFormat
+            generating={generating}
+            onBack={() => setStep(1)}
+            onGenerate={handleGenerate}
+          />
+        )}
 
-      {step === 3 && (
-        <StepGenerate
-          videoId={videoId}
-          format={format}
-          plan={plan}
-          onRetry={() => {
-            setVideoId(null);
-            setStep(2);
-          }}
-        />
-      )}
+        {step === 3 && (
+          <StepGenerate
+            videoId={videoId}
+            format={format}
+            plan={plan}
+            onRetry={() => {
+              setVideoId(null);
+              setStep(2);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

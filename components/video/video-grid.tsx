@@ -1,6 +1,7 @@
 'use client';
 
-import { AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
+import { AlertTriangle, Plus } from 'lucide-react';
 import { useVideos } from '@/lib/client/use-videos';
 import { Card } from '@/components/ui/card';
 import { Chip } from '@/components/ui/chip';
@@ -32,16 +33,26 @@ export function VideoGrid() {
   if (!videos || videos.length === 0) return <EmptyState />;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <h1 className="display text-2xl text-ink">your videos</h1>
-        <span className="microlabel">{videos.length} cuts</span>
-        {demo && <Chip tone="ember">demo</Chip>}
+    <div className="space-y-7">
+      <div className="flex items-end justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className="display text-3xl text-ink">your videos</h1>
+          <span className="rounded-full border border-hair px-2.5 py-1 font-[family-name:var(--font-mono)] text-[11px] tracking-[0.04em] text-muted">
+            {videos.length}
+          </span>
+          {demo && <Chip tone="ember">demo</Chip>}
+        </div>
+        <Link
+          href="/app/new"
+          className="hidden items-center gap-1.5 font-[family-name:var(--font-mono)] text-[13px] text-muted transition-colors hover:text-ink sm:inline-flex"
+        >
+          <Plus className="size-4" /> new
+        </Link>
       </div>
 
       <div className={GRID}>
-        {videos.map((v) => (
-          <VideoCard key={v.id} video={v} onDeleted={removeLocal} />
+        {videos.map((v, i) => (
+          <VideoCard key={v.id} video={v} index={i} onDeleted={removeLocal} />
         ))}
       </div>
     </div>

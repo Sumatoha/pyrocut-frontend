@@ -159,7 +159,7 @@ export function VideoDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="rise-in space-y-8">
       <div className="flex items-center justify-between gap-4">
         <Link
           href="/app"

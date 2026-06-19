@@ -18,9 +18,12 @@ import { VideoThumb } from './video-thumb';
 export function VideoCard({
   video,
   onDeleted,
+  index = 0,
 }: {
   video: Video;
   onDeleted: (id: string) => void;
+  /** позиция в гриде — для каскадного появления (stagger). */
+  index?: number;
 }) {
   const [confirm, setConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -64,11 +67,19 @@ export function VideoCard({
 
   return (
     <>
-      <Card className="group relative overflow-hidden p-2.5 transition-shadow hover:shadow-pop">
+      <div
+        className="rise-in"
+        style={{ animationDelay: `${Math.min(index, 11) * 55}ms` }}
+      >
+      <Card className="lift group relative overflow-hidden border-hair p-2.5 hover:-translate-y-1 hover:border-hair-strong hover:shadow-float">
         {/* ember click-ring акцент на hover */}
         <span className="pointer-events-none absolute right-5 top-5 z-10 size-2 rounded-full bg-ember opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-hover:animate-[var(--animate-clickring)]" />
 
-        <Link href={`/app/v/${video.id}`} aria-label={`open video ${video.id}`}>
+        <Link
+          href={`/app/v/${video.id}`}
+          aria-label={`open video ${video.id}`}
+          className="block overflow-hidden rounded-[var(--radius-win)]"
+        >
           <VideoThumb video={video} />
         </Link>
 
@@ -85,7 +96,7 @@ export function VideoCard({
             {video.recipe && <Chip>{video.recipe}</Chip>}
           </div>
 
-          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+          <div className="flex translate-y-1 items-center gap-0.5 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease-out-expo)] focus-within:translate-y-0 focus-within:opacity-100 group-hover:translate-y-0 group-hover:opacity-100">
             {mp4Url && (
               <a
                 href={mp4Url}
@@ -94,7 +105,7 @@ export function VideoCard({
                 aria-label="download mp4"
                 className={cn(
                   'grid size-8 place-items-center rounded-full text-ink2',
-                  'transition-colors hover:bg-black/[0.05] hover:text-ink',
+                  'transition-[background-color,color,transform] duration-200 hover:bg-black/[0.05] hover:text-ink active:scale-90',
                 )}
               >
                 <Download className="size-4" />
@@ -103,20 +114,21 @@ export function VideoCard({
             <button
               onClick={handleShare}
               aria-label="copy share link"
-              className="grid size-8 place-items-center rounded-full text-ink2 transition-colors hover:bg-black/[0.05] hover:text-ink"
+              className="grid size-8 place-items-center rounded-full text-ink2 transition-[background-color,color,transform] duration-200 hover:bg-black/[0.05] hover:text-ink active:scale-90"
             >
               <Share2 className="size-4" />
             </button>
             <button
               onClick={() => setConfirm(true)}
               aria-label="delete video"
-              className="grid size-8 place-items-center rounded-full text-ink2 transition-colors hover:bg-ember-soft hover:text-ember"
+              className="grid size-8 place-items-center rounded-full text-ink2 transition-[background-color,color,transform] duration-200 hover:bg-ember-soft hover:text-ember active:scale-90"
             >
               <Trash2 className="size-4" />
             </button>
           </div>
         </div>
       </Card>
+      </div>
 
       <Modal
         open={confirm}

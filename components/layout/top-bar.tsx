@@ -31,7 +31,11 @@ export function TopBar({
     <header className="sticky top-0 z-50 border-b border-hair bg-paper/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-6 px-5 sm:px-8">
         <div className="flex items-center gap-8">
-          <Link href="/app" aria-label="pyrocut home">
+          <Link
+            href="/app"
+            aria-label="pyrocut home"
+            className="inline-block transition-transform duration-300 ease-[var(--ease-spring)] hover:scale-[1.03] active:scale-95"
+          >
             <Wordmark />
           </Link>
           <nav className="hidden items-center gap-1 sm:flex">
@@ -40,13 +44,16 @@ export function TopBar({
                 key={l.href}
                 href={l.href}
                 className={cn(
-                  'rounded-full px-3 py-1.5 font-[family-name:var(--font-mono)] text-[13px] transition-colors',
+                  'relative rounded-full px-3 py-1.5 font-[family-name:var(--font-mono)] text-[13px] transition-colors duration-200',
                   isActive(l.href)
-                    ? 'bg-black/[0.05] text-ink'
-                    : 'text-muted hover:text-ink',
+                    ? 'text-ink'
+                    : 'text-muted hover:bg-black/[0.04] hover:text-ink',
                 )}
               >
                 {l.label}
+                {isActive(l.href) && (
+                  <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full brand-grad" />
+                )}
               </Link>
             ))}
           </nav>

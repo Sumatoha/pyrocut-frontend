@@ -114,10 +114,11 @@ export function StepFormat({
                 onClick={() => setFormat(f)}
                 aria-pressed={sel}
                 className={cn(
-                  'flex items-center gap-4 rounded-[var(--radius-card)] border p-5 text-left transition-colors',
+                  'flex items-center gap-4 rounded-[var(--radius-card)] border p-5 text-left',
+                  'transition-[border-color,background-color,box-shadow,transform] duration-300 ease-[var(--ease-out-expo)] active:scale-[0.99]',
                   sel
-                    ? 'border-violet bg-violet-soft/50'
-                    : 'border-hair hover:border-hair-strong',
+                    ? 'border-violet bg-violet-soft/50 shadow-pop'
+                    : 'border-hair hover:-translate-y-0.5 hover:border-hair-strong hover:shadow-lift',
                 )}
               >
                 <span className="grid h-[100px] w-[120px] shrink-0 place-items-center">
@@ -157,10 +158,11 @@ export function StepFormat({
                 onClick={() => setCount(n)}
                 aria-pressed={sel}
                 className={cn(
-                  'h-11 w-11 rounded-[12px] border font-[family-name:var(--font-mono)] text-sm transition-colors',
+                  'h-11 w-11 rounded-[12px] border font-[family-name:var(--font-mono)] text-sm',
+                  'transition-all duration-300 ease-[var(--ease-spring)] active:scale-90',
                   sel
-                    ? 'border-violet bg-violet-soft/50 text-violet'
-                    : 'border-hair text-ink2 hover:border-hair-strong',
+                    ? 'border-violet bg-violet-soft/50 text-violet shadow-pop'
+                    : 'border-hair text-ink2 hover:-translate-y-0.5 hover:border-hair-strong',
                 )}
               >
                 {n}
@@ -190,19 +192,22 @@ export function StepFormat({
                 onClick={() => setPreset(p)}
                 aria-pressed={sel}
                 className={cn(
-                  'flex flex-col gap-3 rounded-[var(--radius-card)] border p-4 text-left transition-colors',
+                  'group/preset flex flex-col gap-3 rounded-[var(--radius-card)] border p-4 text-left',
+                  'transition-[border-color,background-color,box-shadow,transform] duration-300 ease-[var(--ease-out-expo)] active:scale-[0.99]',
                   sel
-                    ? 'border-violet bg-violet-soft/50'
-                    : 'border-hair hover:border-hair-strong',
+                    ? 'border-violet bg-violet-soft/50 shadow-pop'
+                    : 'border-hair hover:-translate-y-0.5 hover:border-hair-strong hover:shadow-lift',
                 )}
               >
-                <span className="win-surface flex h-16 items-end gap-1.5 rounded-[12px] p-3">
+                <span className="win-surface flex h-16 items-end gap-1.5 overflow-hidden rounded-[12px] p-3">
                   {info.bars.map((h, i) => (
                     <span
                       key={i}
                       className={cn(
-                        'flex-1 rounded-sm',
-                        sel ? 'brand-grad' : 'bg-white/25',
+                        'flex-1 rounded-sm transition-[height,background-color] duration-500 ease-[var(--ease-out-expo)]',
+                        sel
+                          ? 'brand-grad'
+                          : 'bg-white/25 group-hover/preset:bg-white/40',
                       )}
                       style={{ height: `${h}%` }}
                     />
