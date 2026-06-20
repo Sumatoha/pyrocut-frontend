@@ -6,9 +6,11 @@ import { cn } from '@/lib/cn';
 import { stageGradient } from '@/lib/thumb';
 import { videoStatusMeta, videoProgress } from '@/lib/status';
 import { useSignedUrl, BUCKET_RENDERS } from '@/lib/client/storage';
+import { useElapsed } from '@/lib/client/use-elapsed';
 import { Scrubber } from '@/components/ui/scrubber';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { RecTimer } from '@/components/motion/rec-timer';
+import { RenderStage } from '@/components/motion/render-stage';
 
 /**
  * Тёмный thumbnail-герой. Реальный thumbPath → signed URL → <img>; иначе
@@ -24,6 +26,8 @@ export function VideoThumb({
   const meta = videoStatusMeta(video.status);
   const aspect = video.format === '9:16' ? 'aspect-[9/16]' : 'aspect-video';
   const thumbUrl = useSignedUrl(BUCKET_RENDERS, video.thumbPath);
+  const elapsed = useElapsed(video.createdAt, meta.active);
+  const rendering = meta.active && !thumbUrl;
 
   return (
     <div
@@ -45,15 +49,20 @@ export function VideoThumb({
         />
       )}
 
+      {/* идёт рендер (нет кадра) → живой кинематографичный бэкдроп */}
+      {rendering && <RenderStage label={meta.label} compact />}
+
       {/* лёгкая зернистость/точки как на лендинге */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-50"
-        style={{
-          backgroundImage:
-            'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
-          backgroundSize: '22px 22px',
-        }}
-      />
+      {!rendering && (
+        <div
+          className="pointer-events-none absolute inset-0 opacity-50"
+          style={{
+            backgroundImage:
+              'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+          }}
+        />
+      )}
 
       {/* нижний скрим — читаемость статуса/скраббера поверх любого кадра */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/45 to-transparent opacity-80" />
@@ -64,7 +73,7 @@ export function VideoThumb({
       {/* верх: статус / REC */}
       <div className="absolute inset-x-0 top-0 flex items-center justify-between p-3">
         <StatusBadge meta={meta} onDark />
-        {meta.active && <RecTimer time="00:00:00" />}
+        {meta.active && <RecTimer time={elapsed} />}
       </div>
 
       {/* центр: play для готового */}

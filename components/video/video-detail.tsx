@@ -30,10 +30,12 @@ import { Chip } from '@/components/ui/chip';
 import { Modal } from '@/components/ui/modal';
 import { Scrubber } from '@/components/ui/scrubber';
 import { StatusBadge } from '@/components/ui/status-badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/toast';
 import { RecTimer } from '@/components/motion/rec-timer';
+import { RenderStage } from '@/components/motion/render-stage';
+import { useElapsed } from '@/lib/client/use-elapsed';
 import { VideoThumb } from './video-thumb';
+import { VideoDetailSkeleton } from './skeletons';
 import { CompositionPreview } from './composition-preview';
 
 const isReal = (p?: string | null): p is string =>
@@ -57,6 +59,11 @@ export function VideoDetail({ id }: { id: string }) {
   const [deleting, setDeleting] = useState(false);
   const [varying, setVarying] = useState(false);
 
+  const elapsed = useElapsed(
+    video?.createdAt,
+    !!video && videoStatusMeta(video.status).active,
+  );
+
   if (error) {
     return (
       <div className="py-20 text-center">
@@ -69,7 +76,7 @@ export function VideoDetail({ id }: { id: string }) {
     );
   }
 
-  if (!video) return <DetailSkeleton />;
+  if (!video) return <VideoDetailSkeleton />;
 
   const meta = videoStatusMeta(video.status);
   const aspect =
@@ -203,22 +210,28 @@ export function VideoDetail({ id }: { id: string }) {
               <CompositionPreview url={compositionUrl} />
             ) : (
               <>
-                <RecTimer time="00:00:00" className="absolute left-4 top-4" />
-                <div className="absolute inset-0 grid place-items-center">
-                  {video.status === 'ready' ? (
-                    <span className="grid size-14 place-items-center rounded-full bg-black/40 text-white backdrop-blur-sm">
-                      <Play className="size-6 translate-x-0.5 fill-white" />
-                    </span>
-                  ) : (
-                    <span className="font-[family-name:var(--font-mono)] text-[13px] text-white/70">
-                      {meta.label}
-                    </span>
-                  )}
-                </div>
-                {meta.active && (
-                  <div className="absolute inset-x-5 bottom-5">
-                    <Scrubber value={videoProgress(video.status)} active onDark />
+                {meta.active ? (
+                  <RenderStage label={meta.label} />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center">
+                    {video.status === 'ready' ? (
+                      <span className="grid size-14 place-items-center rounded-full bg-black/40 text-white backdrop-blur-sm">
+                        <Play className="size-6 translate-x-0.5 fill-white" />
+                      </span>
+                    ) : (
+                      <span className="font-[family-name:var(--font-mono)] text-[13px] text-white/70">
+                        {meta.label}
+                      </span>
+                    )}
                   </div>
+                )}
+                {meta.active && (
+                  <>
+                    <RecTimer time={elapsed} className="absolute left-4 top-4" />
+                    <div className="absolute inset-x-5 bottom-5">
+                      <Scrubber value={videoProgress(video.status)} active onDark />
+                    </div>
+                  </>
                 )}
               </>
             )}
@@ -320,17 +333,3 @@ export function VideoDetail({ id }: { id: string }) {
   );
 }
 
-function DetailSkeleton() {
-  return (
-    <div className="space-y-8">
-      <Skeleton className="h-5 w-24" />
-      <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-        <Skeleton className="aspect-video w-full rounded-[var(--radius-card)]" />
-        <div className="space-y-3">
-          <Skeleton className="h-9 w-full rounded-full" />
-          <Skeleton className="h-9 w-full rounded-full" />
-        </div>
-      </div>
-    </div>
-  );
-}

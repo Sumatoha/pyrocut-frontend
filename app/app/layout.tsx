@@ -1,29 +1,48 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { TriangleAlert } from 'lucide-react';
 import { TopBar } from '@/components/layout/top-bar';
 import { getProfile } from '@/lib/auth/profile';
 import { authConfigured } from '@/lib/auth/server';
 
-export default async function DashboardLayout({
+/**
+ * Layout НЕ блокирует первый рендер на сетевом getProfile: оболочка и {children}
+ * отдаются сразу, профиль (plan/credits/email) стримится в TopBar через Suspense.
+ * Fallback — тот же TopBar с дефолтами → нет сдвига layout, только подмена значений.
+ */
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const configured = authConfigured();
-  const profile = configured ? await getProfile() : null;
 
   return (
     <div className="min-h-dvh bg-paper">
-      <TopBar
-        plan={profile?.plan ?? 'free'}
-        email={profile?.email}
-        credits={profile?.credits ?? 0}
-      />
+      {configured ? (
+        <Suspense fallback={<TopBar plan="free" credits={0} />}>
+          <TopBarWithProfile />
+        </Suspense>
+      ) : (
+        <TopBar plan="free" credits={0} />
+      )}
       {!configured && <DegradedBanner />}
       <main className="mx-auto max-w-[1180px] px-5 py-8 sm:px-8 sm:py-10">
         {children}
       </main>
     </div>
+  );
+}
+
+/** Async-островок: тянет профиль, не задерживая остальной layout. */
+async function TopBarWithProfile() {
+  const profile = await getProfile();
+  return (
+    <TopBar
+      plan={profile?.plan ?? 'free'}
+      email={profile?.email}
+      credits={profile?.credits ?? 0}
+    />
   );
 }
 

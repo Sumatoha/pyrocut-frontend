@@ -5,17 +5,17 @@ import { AlertTriangle, Plus } from 'lucide-react';
 import { useVideos } from '@/lib/client/use-videos';
 import { Card } from '@/components/ui/card';
 import { Chip } from '@/components/ui/chip';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { VideoCard } from './video-card';
 import { EmptyState } from './empty-state';
+import { VideosSkeleton } from './skeletons';
 
 const GRID = 'grid gap-5 sm:grid-cols-2 lg:grid-cols-3';
 
 export function VideoGrid() {
   const { videos, loading, error, demo, reload, removeLocal } = useVideos();
 
-  if (loading) return <GridSkeleton />;
+  if (loading) return <VideosSkeleton />;
 
   if (error) {
     return (
@@ -53,25 +53,6 @@ export function VideoGrid() {
       <div className={GRID}>
         {videos.map((v, i) => (
           <VideoCard key={v.id} video={v} index={i} onDeleted={removeLocal} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function GridSkeleton() {
-  return (
-    <div className="space-y-6">
-      <Skeleton className="h-7 w-40" />
-      <div className={GRID}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="space-y-3 p-2.5">
-            <Skeleton className="aspect-video w-full rounded-[var(--radius-win)]" />
-            <div className="flex gap-2 px-1.5 pb-1">
-              <Skeleton className="h-6 w-12 rounded-full" />
-              <Skeleton className="h-6 w-16 rounded-full" />
-            </div>
-          </Card>
         ))}
       </div>
     </div>
