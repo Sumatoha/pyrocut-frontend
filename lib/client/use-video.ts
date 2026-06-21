@@ -66,29 +66,52 @@ export function useVideo(id: string | null): {
       return () => {
         cancelled = true;
       };
-    const channel = sb
-      .channel(`video-${id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'videos',
-          filter: `id=eq.${id}`,
-        },
-        (payload: RealtimePostgresChangesPayload<Row>) => {
-          if (payload.eventType === 'DELETE') return;
-          const next = mapVideoRow(payload.new);
-          setVideo((prev) => (prev ? { ...prev, ...next } : next));
-        },
-      )
-      .subscribe();
+    let channel: ReturnType<typeof sb.channel> | null = null;
+    // Realtime под RLS фильтрует события по JWT юзера — ставим токен ДО subscribe,
+    // иначе анонимный сокет отсекает все UPDATE и статус залипает до перезагрузки.
+    void (async () => {
+      const { data } = await sb.auth.getSession();
+      const token = data.session?.access_token;
+      if (token) await sb.realtime.setAuth(token);
+      if (cancelled) return;
+      channel = sb
+        .channel(`video-${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'videos',
+            filter: `id=eq.${id}`,
+          },
+          (payload: RealtimePostgresChangesPayload<Row>) => {
+            if (payload.eventType === 'DELETE') return;
+            const next = mapVideoRow(payload.new);
+            setVideo((prev) => (prev ? { ...prev, ...next } : next));
+          },
+        )
+        .subscribe();
+    })();
 
     return () => {
       cancelled = true;
-      void sb.removeChannel(channel);
+      if (channel) void sb.removeChannel(channel);
     };
   }, [id]);
+
+  // Safety-net поллинг, пока видео не завершилось (realtime может пропасть при
+  // reconnect/refresh токена). Останавливается на ready/failed.
+  const active = !!video && video.status !== 'ready' && video.status !== 'failed';
+  useEffect(() => {
+    if (DEMO_MODE || !id || !active) return;
+    const t = setInterval(() => {
+      api
+        .getVideo(id)
+        .then((v) => setVideo(v))
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(t);
+  }, [id, active]);
 
   return { video, error };
 }

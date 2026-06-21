@@ -64,27 +64,36 @@ export function useProject(id: string | null): {
     if (!sb) return () => {
       cancelled = true;
     };
-    const channel = sb
-      .channel(`project-${id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'projects',
-          filter: `id=eq.${id}`,
-        },
-        (payload: RealtimePostgresChangesPayload<Row>) => {
-          if (payload.eventType === 'DELETE') return;
-          const next = mapProjectRow(payload.new);
-          setProject((prev) => (prev ? { ...prev, ...next } : next));
-        },
-      )
-      .subscribe();
+    let channel: ReturnType<typeof sb.channel> | null = null;
+    // Realtime под RLS фильтрует события по JWT юзера — ставим токен ДО subscribe,
+    // иначе анонимный сокет отсекает все UPDATE и статус залипает до перезагрузки.
+    void (async () => {
+      const { data } = await sb.auth.getSession();
+      const token = data.session?.access_token;
+      if (token) await sb.realtime.setAuth(token);
+      if (cancelled) return;
+      channel = sb
+        .channel(`project-${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'projects',
+            filter: `id=eq.${id}`,
+          },
+          (payload: RealtimePostgresChangesPayload<Row>) => {
+            if (payload.eventType === 'DELETE') return;
+            const next = mapProjectRow(payload.new);
+            setProject((prev) => (prev ? { ...prev, ...next } : next));
+          },
+        )
+        .subscribe();
+    })();
 
     return () => {
       cancelled = true;
-      void sb.removeChannel(channel);
+      if (channel) void sb.removeChannel(channel);
     };
   }, [id]);
 
