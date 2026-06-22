@@ -295,6 +295,11 @@ export interface CreateVideosBatchInput {
   prompt?: string;
 }
 
+/** POST /videos/:id/edit — точечная AI-правка готового видео по инструкции юзера. */
+export interface EditVideoInput {
+  instruction: string;
+}
+
 export interface CheckoutInput {
   plan: Exclude<Plan, 'free'>;
 }

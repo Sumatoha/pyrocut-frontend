@@ -11,6 +11,7 @@ import {
   Shuffle,
   Ratio,
   Play,
+  Wand2,
 } from 'lucide-react';
 import type { Format, Preset } from '@pyrocut/shared';
 import { cn } from '@/lib/cn';
@@ -58,6 +59,8 @@ export function VideoDetail({ id }: { id: string }) {
   const [confirm, setConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [varying, setVarying] = useState(false);
+  const [instruction, setInstruction] = useState('');
+  const [editing, setEditing] = useState(false);
 
   const elapsed = useElapsed(
     video?.createdAt,
@@ -151,6 +154,35 @@ export function VideoDetail({ id }: { id: string }) {
         'could not remix',
         e instanceof ApiError ? e.message : undefined,
       );
+    }
+  }
+
+  // Точечная AI-правка: «исправь вот это». Статус ре-рендера ловит useVideo (realtime/поллинг).
+  async function requestEdit() {
+    if (!video) return;
+    const text = instruction.trim();
+    if (text.length < 3) return;
+    setEditing(true);
+    try {
+      if (DEMO_MODE) {
+        toast.success('on it', 'applying your fix');
+        setInstruction('');
+        return;
+      }
+      await api.editVideo(id, { instruction: text });
+      toast.success('on it', 'applying your fix — preview updates live');
+      setInstruction('');
+    } catch (e) {
+      if (e instanceof ApiError && e.isPaymentRequired) {
+        router.push('/app/billing');
+        return;
+      }
+      toast.error(
+        'could not apply fix',
+        e instanceof ApiError ? e.message : undefined,
+      );
+    } finally {
+      setEditing(false);
     }
   }
 
@@ -288,6 +320,32 @@ export function VideoDetail({ id }: { id: string }) {
               <Shuffle className="size-4" /> remix · {REMIX_COUNT} fresh cuts
             </Button>
           </div>
+
+          {video.status === 'ready' && (
+            <div className="space-y-2 border-t border-hair pt-4">
+              <h2 className="microlabel">ask for a fix</h2>
+              <textarea
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
+                rows={3}
+                maxLength={600}
+                placeholder="e.g. ‘the headline overlaps the logo — move it down’"
+                className="w-full resize-none rounded-[var(--radius-win)] border border-hair-strong bg-paper p-3 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-violet"
+              />
+              <Button
+                size="sm"
+                className="w-full justify-center"
+                loading={editing}
+                disabled={instruction.trim().length < 3}
+                onClick={requestEdit}
+              >
+                <Wand2 className="size-4" /> apply fix
+              </Button>
+              <p className="text-[12px] text-muted">
+                first fix free · then 1 credit. keeps the best version.
+              </p>
+            </div>
+          )}
 
           {siblings.length > 0 && (
             <div className="grid grid-cols-2 gap-2 pt-2">

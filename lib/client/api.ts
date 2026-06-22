@@ -8,6 +8,7 @@ import type {
   CreateProjectInput,
   CreateVideoInput,
   CreateVideosBatchInput,
+  EditVideoInput,
   Plan,
   Project,
   Video,
@@ -145,6 +146,13 @@ export const api = {
 
   // GET /api/videos/:id -> Video
   getVideo: (id: string) => request<Video>(`/videos/${id}`),
+
+  // POST /api/videos/:id/edit { instruction } -> Video (queued); 1-я правка бесплатно, дальше 1 кредит
+  editVideo: (id: string, input: EditVideoInput) =>
+    request<Video>(`/videos/${id}/edit`, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
 
   // DELETE /api/videos/:id -> { ok:true }
   deleteVideo: (id: string) =>
