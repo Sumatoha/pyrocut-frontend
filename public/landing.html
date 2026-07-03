@@ -639,297 +639,68 @@ hr.rule {
     }
     .hero-watch:hover { color: var(--ink); }
 
-    /* render scrubber — violet fill + ember spark, no spinners */
-    .scrubber {
-      position: absolute;
-      left: 18px; right: 18px; bottom: 16px;
-      z-index: 6;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 9px 14px;
-      border-radius: var(--r-pill);
-      background: rgba(10,7,20,0.62);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-family: var(--mono);
-      font-size: 11px;
-      color: rgba(255,255,255,0.6);
-    }
-    .sb-track {
-      flex: 1;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.14);
-      overflow: visible;
-      position: relative;
-    }
-    .sb-fill {
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 62%;
-      border-radius: 999px;
-      background: linear-gradient(96deg, var(--violet), var(--violet2));
-      transition: width 1.6s cubic-bezier(.4,.1,.2,1);
-    }
-    .sb-spark {
-      position: absolute;
-      right: -3px; top: 50%;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      transform: translateY(-50%);
-      background: var(--heat);
-      box-shadow: 0 0 0 3px rgba(255,106,44,0.25), 0 0 12px 2px rgba(255,106,44,0.7);
-      animation: spark 1.3s ease-in-out infinite;
-    }
-    @keyframes spark { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
-    .sb-stage {
-      color: var(--heat);
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 10px;
-    }
-
-    /* brand swatch row inside a float chip */
-    .swatches { display: flex; gap: 4px; }
-    .swatches i { width: 11px; height: 11px; border-radius: 4px; display: inline-block; }
-
-    /* hero preview window */
-    .hero-preview {
-      margin: 88px auto 0;
-      max-width: 1180px;
-      position: relative;
-    }
-    .preview-window {
-      background: var(--noir);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.05) inset,
-        0 30px 80px -30px rgba(11,11,14,0.55),
-        0 12px 40px -16px rgba(11,11,14,0.4);
-      border: 1px solid rgba(0,0,0,0.4);
-      position: relative;
-    }
-    .titlebar {
-      height: 38px;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      background: var(--noir-2);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      gap: 14px;
-    }
-    .tl-dots { display: flex; gap: 7px; }
-    .tl-dot { width: 11px; height: 11px; border-radius: 50%; }
-    .tl-dot.r { background: #FF5F57; }
-    .tl-dot.y { background: #FEBC2E; }
-    .tl-dot.g { background: #28C840; }
-    .titlebar-title {
-      flex: 1;
-      text-align: center;
-      font-size: 12px;
-      color: rgba(255,255,255,0.5);
-      font-family: var(--mono);
-    }
-    .titlebar-rec {
-      display: inline-flex; align-items: center; gap: 7px;
-      font-size: 11px;
-      color: var(--heat);
-      font-family: var(--mono);
-    }
-    .titlebar-rec .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--heat); animation: rec 1.3s ease-in-out infinite; }
     @keyframes rec { 0%, 100% { opacity: 1 } 50% { opacity: 0.2 } }
 
-    .preview-stage {
-      aspect-ratio: 16 / 9;
-      position: relative;
-      background:
-        radial-gradient(120% 80% at 20% 0%, #2A1F4F 0%, transparent 55%),
-        radial-gradient(140% 90% at 90% 100%, #5B1F3E 0%, transparent 60%),
-        linear-gradient(180deg, #1A1230 0%, #0E0B1F 100%);
-      overflow: hidden;
-    }
-    .preview-stage::before {
-      content: "";
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-        radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 38px 38px, 19px 19px;
-      background-position: 0 0, 9px 9px;
-      opacity: .6;
-    }
-    .preview-stage::after {
-      content: "";
-      position: absolute;
-      inset: -10%;
-      background:
-        radial-gradient(35% 30% at 30% 70%, rgba(255,106,44,0.25), transparent 70%),
-        radial-gradient(40% 35% at 75% 25%, rgba(109,74,255,0.30), transparent 70%);
-      filter: blur(40px);
-      pointer-events: none;
-    }
-
-    /* the "captured" window inside the cinematic stage */
-    .device {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) scale(1.05);
-      width: 64%;
-      aspect-ratio: 16/10;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 30px 80px -20px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
-      transition: transform 1.8s cubic-bezier(.5,.1,.2,1);
-    }
-    .device.zoomed { transform: translate(-58%, -45%) scale(1.45); }
-    .device-titlebar {
-      height: 26px;
-      background: #F2F0EA;
-      display: flex; align-items: center; padding: 0 10px;
-      gap: 6px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-    .device-titlebar .tl-dot { width: 8px; height: 8px; }
-    .device-body {
-      padding: 18px 22px;
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 16px;
-      height: calc(100% - 26px);
-      font-family: var(--sans);
-    }
-    .device-sidebar {
-      background: #FAF8F2;
-      border-radius: 8px;
-      padding: 10px;
-      display: flex; flex-direction: column; gap: 6px;
-      font-size: 9px;
-    }
-    .device-sidebar .row {
-      padding: 6px 8px;
-      border-radius: 5px;
-      color: #6B6B72;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .device-sidebar .row.active { background: var(--violet); color: white; }
-    .device-sidebar .row::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .5; }
-    .device-main { display: flex; flex-direction: column; gap: 10px; }
-    .device-h { font-size: 14px; font-weight: 700; color: #0B0B0E; letter-spacing: -0.01em; }
-    .device-stat {
-      background: #F4F1E4;
-      border-radius: 6px;
-      padding: 8px 10px;
-      font-size: 9px; color: #6B6B72;
-    }
-    .device-stat .big { font-size: 16px; color: #0B0B0E; font-weight: 700; display: block; margin-top: 2px; }
-    .device-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .chart {
-      background: #FAF8F2;
-      border-radius: 6px;
-      height: 50px;
-      position: relative;
-      overflow: hidden;
-    }
-    .chart svg { width: 100%; height: 100%; }
-
-    /* cursor highlight (the "click ring" pyrocut adds) */
-    .cursor {
-      position: absolute;
-      width: 18px; height: 18px;
-      top: 62%; left: 56%;
-      z-index: 5;
-      transition: top 1.4s cubic-bezier(.4,.1,.2,1), left 1.4s cubic-bezier(.4,.1,.2,1);
-    }
-    .cursor::before {
-      content: "";
-      position: absolute;
-      inset: -14px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.45), transparent 70%);
-    }
-    .cursor svg { position: relative; }
-    .click-ring {
-      position: absolute;
-      top: 62%; left: 56%;
-      width: 18px; height: 18px;
-      pointer-events: none;
-      transition: top 1.4s cubic-bezier(.4,.1,.2,1), left 1.4s cubic-bezier(.4,.1,.2,1);
-    }
-    .click-ring::before {
-      content: "";
-      position: absolute;
-      inset: -10px;
-      border-radius: 50%;
-      border: 2px solid var(--heat);
-      opacity: 0;
-      animation: click 2.2s ease-out infinite;
-    }
-    @keyframes click {
-      0% { transform: scale(0.6); opacity: 0; }
-      20% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(2.2); opacity: 0; }
-    }
-
-    /* hero floating chips */
-    .float-chip {
-      position: absolute;
-      background: rgba(15,15,20,0.78);
-      backdrop-filter: blur(20px);
-      color: white;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 16px 40px -16px rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.08);
-      z-index: 4;
-    }
-    .float-chip .label { color: rgba(255,255,255,0.55); font-size: 11px; }
-    .float-chip strong { font-weight: 500; }
-    .chip-zoom { top: 10%; left: -2.5%; animation: chip-float 6s ease-in-out infinite; }
-    .chip-cursor { bottom: 14%; right: -2.5%; animation: chip-float 7s ease-in-out -2.4s infinite; }
-    .chip-bg { top: 16%; right: -3%; animation: chip-float 6.5s ease-in-out -4s infinite; }
-    @keyframes chip-float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    @media (max-width: 900px) { .float-chip { display: none; } }
-
-    /* ------------- proof strip — infinite marquee ------------- */
+    /* ------------- proof strip — двухрядный встречный marquee ------------- */
     .strip {
-      padding: 26px 0;
+      padding: 22px 0;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
       overflow: hidden;
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
     }
     .strip-track {
       display: flex;
       width: max-content;
-      animation: marquee 28s linear infinite;
+      animation: marquee 34s linear infinite;
     }
-    .strip:hover .strip-track { animation-play-state: paused; }
+    .strip-track.rev { animation: marquee-rev 44s linear infinite; }
     .strip-inner {
       display: flex;
-      gap: 56px;
+      gap: 18px;
       align-items: center;
-      padding-right: 56px;
+      padding-right: 18px;
       flex-shrink: 0;
-      color: var(--muted);
-      font-size: 13px;
       white-space: nowrap;
+      font-family: var(--mono);
     }
-    .strip-inner b { color: var(--ink); font-weight: 500; }
-    .strip-inner .sep { color: var(--faint); }
-    @keyframes marquee {
-      to { transform: translateX(-50%); }
+    .strip-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      font-size: 13px;
+      color: var(--ink-soft);
+      background: var(--surface);
     }
+    .strip-item i {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--violet);
+      flex-shrink: 0;
+    }
+    .strip-item:nth-child(even) i { background: var(--heat); }
+    .strip-lead {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 4px;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .strip-track.rev .strip-item {
+      border-style: dashed;
+      color: var(--muted);
+      background: transparent;
+    }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    @keyframes marquee-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
 
     /* ------------- features grid ------------- */
     .feat-grid {
@@ -1268,83 +1039,277 @@ hr.rule {
     .rv.in { opacity: 1; transform: none; }
     .rv-d1 { transition-delay: .06s; } .rv-d2 { transition-delay: .12s; } .rv-d3 { transition-delay: .18s; } .rv-d4 { transition-delay: .24s; } .rv-d5 { transition-delay: .30s; }
 
-    /* ---------- hero video slot ---------- */
-    .hv-bar {
-      height: 46px; display: flex; align-items: center; gap: 12px;
+    /* ---------- showreel — scroll-driven horizontal filmstrip ---------- */
+    .showreel {
+      height: 340vh;
+      position: relative;
+      background:
+        radial-gradient(80% 60% at 50% 0%, #1B1533 0%, transparent 60%),
+        linear-gradient(180deg, #0E0B1F 0%, #120E1F 100%);
+    }
+    .sr-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 84px; /* воздух под sticky-навом */
+    }
+    /* dot texture over the dark stage */
+    .sr-sticky::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+      pointer-events: none;
+    }
+    .sr-head {
+      text-align: center;
+      padding: 0 32px;
+      margin-bottom: 5vh;
+      position: relative;
+      z-index: 2;
+    }
+    .sr-head .eyebrow { color: var(--violet2); display: block; margin-bottom: 16px; }
+    .sr-head .h-section { color: #fff; }
+    .sr-sub {
+      margin: 16px auto 0;
+      max-width: 460px;
+      font-family: var(--mono);
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+    }
+    .sr-track {
+      display: flex;
+      gap: clamp(20px, 2.4vw, 36px);
+      width: max-content;
+      padding: 0 calc(50vw - min(23vw, 330px));
+      will-change: transform;
+      position: relative;
+      z-index: 2;
+    }
+    .reel {
+      width: clamp(380px, 46vw, 660px);
+      flex-shrink: 0;
+      background: var(--noir-2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 40px 90px -36px rgba(0,0,0,0.7);
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+    .reel-bar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 0 16px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.04);
       border-bottom: 1px solid rgba(255,255,255,0.07);
+      font-family: var(--mono);
     }
-    .hv-mark { display: inline-flex; }
-    .hv-name { font-family: var(--mono); font-size: 12.5px; color: rgba(255,255,255,0.58); letter-spacing: -0.01em; }
-    .hv-tags { margin-left: auto; display: inline-flex; gap: 7px; }
-    .hv-tags span {
-      font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.09);
-      padding: 4px 9px; border-radius: 6px;
+    .reel-dot { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+    .reel-name { font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: -0.01em; }
+    .reel-rec {
+      margin-left: auto;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 10px; letter-spacing: 0.12em; color: var(--heat);
     }
-    .hv-poster { position: absolute; inset: 0; }
-    .hv-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+    .reel-rec::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--heat); animation: rec 1.3s ease-in-out infinite; }
+    .reel-stage {
+      aspect-ratio: 16/9;
+      position: relative;
+      overflow: hidden;
+    }
+    .reel-scrub {
+      position: absolute; left: 16px; right: 16px; bottom: 13px; z-index: 5;
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 10.5px; color: rgba(255,255,255,0.65);
+      font-variant-numeric: tabular-nums;
+    }
+    .reel-scrub .rt { flex: 1; height: 3.5px; border-radius: 999px; background: rgba(255,255,255,0.18); position: relative; }
+    .reel-scrub .rf { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: linear-gradient(90deg, var(--violet), var(--violet2)); }
+    .reel-scrub .rf::after {
+      content: ""; position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
+      width: 9px; height: 9px; border-radius: 50%; background: var(--heat);
+      box-shadow: 0 0 0 3px rgba(255,106,44,0.25), 0 0 10px 1px rgba(255,106,44,0.6);
+    }
+    .reel-tag {
+      position: absolute; left: 16px; top: 14px; z-index: 5;
+      display: flex; flex-direction: column; gap: 2px;
+      font-family: var(--mono);
+    }
+    .reel-tag b { color: #fff; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 4px 18px rgba(0,0,0,0.6); }
+    .reel-tag span { color: rgba(255,255,255,0.55); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
 
-    /* composed product frame (the OUTPUT, not a screen recording) */
-    .hv-card {
-      position: absolute; top: 50%; left: 50%;
-      width: 58%; transform: translate(-50%, -52%) rotate(-1.2deg);
-      background: #fff; border-radius: 13px; overflow: hidden;
-      padding: 16px; display: grid; grid-template-columns: 86px 1fr; gap: 14px;
-      box-shadow: 0 50px 90px -34px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05);
-      font-family: var(--sans);
-      animation: hvFloat 7s ease-in-out infinite;
+    /* 01 lumen — violet dusk + pulsing dashboard */
+    .rs-lumen {
+      background:
+        radial-gradient(110% 80% at 20% 0%, #2A1F4F 0%, transparent 60%),
+        radial-gradient(120% 90% at 95% 100%, #45215C 0%, transparent 60%),
+        linear-gradient(180deg, #1A1230, #0E0B1F);
     }
-    @keyframes hvFloat { 50% { transform: translate(-50%, -56%) rotate(-1.2deg); } }
-    .hv-card-side { background: #F5F3FC; border-radius: 8px; padding: 9px; display: flex; flex-direction: column; gap: 6px; }
-    .hv-card-side span { height: 8px; border-radius: 3px; background: #E4DFF4; }
-    .hv-card-side span.on { background: var(--violet); width: 78%; }
-    .hv-card-main { display: flex; flex-direction: column; gap: 10px; }
-    .hv-card-h { height: 12px; width: 62%; border-radius: 3px; background: #19132E; }
-    .hv-card-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
-    .hv-stat { background: #F5F2FC; border-radius: 7px; padding: 8px 9px; }
-    .hv-stat b { font-size: 15px; font-weight: 700; color: #160F30; display: block; letter-spacing: -0.02em; }
-    .hv-stat i { font-size: 7.5px; color: #948CAE; font-style: normal; letter-spacing: 0.08em; }
-    .hv-card-chart { height: 46px; background: #F8F6FE; border-radius: 7px; overflow: hidden; }
-    .hv-card-chart svg { width: 100%; height: 100%; display: block; }
-
-    .hv-headline {
-      position: absolute; left: 34px; bottom: 62px; z-index: 3;
-      font-family: var(--mono); font-weight: 700; letter-spacing: -0.03em; line-height: 1;
-      color: #fff; font-size: clamp(22px, 2.6vw, 36px);
-      text-shadow: 0 10px 40px rgba(0,0,0,0.55);
+    .rs-card {
+      position: absolute; top: 56%; left: 50%;
+      width: 58%; transform: translate(-50%, -50%);
+      background: #fff; border-radius: 10px; padding: 12px;
+      display: grid; grid-template-columns: 64px 1fr; gap: 10px;
+      box-shadow: 0 34px 70px -26px rgba(0,0,0,0.75);
+      animation: rs-push 5.5s ease-in-out infinite;
     }
-    .hv-headline span { color: var(--ember); }
+    @keyframes rs-push { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.13); } }
+    .rs-side { background: #F5F3FC; border-radius: 6px; padding: 7px; display: flex; flex-direction: column; gap: 5px; }
+    .rs-side i { height: 6px; border-radius: 2px; background: #E4DFF4; }
+    .rs-side i.on { background: var(--violet); width: 75%; }
+    .rs-main { display: flex; flex-direction: column; gap: 7px; }
+    .rs-h { height: 9px; width: 58%; border-radius: 2px; background: #19132E; }
+    .rs-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .rs-stats span { background: #F5F2FC; border-radius: 5px; padding: 6px 7px; }
+    .rs-stats b { display: block; font-family: var(--sans); font-size: 12px; font-weight: 700; color: #160F30; letter-spacing: -0.02em; }
+    .rs-stats i { font-size: 6.5px; font-style: normal; color: #948CAE; letter-spacing: 0.08em; }
+    .rs-chart { height: 34px; background: #F8F6FE; border-radius: 5px; width: 100%; }
 
-    .hv-play {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 4;
-      width: 70px; height: 70px; border-radius: 50%; border: 0;
-      background: #fff; color: var(--ink);
+    /* 02 shiplog — terminal typing */
+    .rs-ship { background: linear-gradient(180deg, #071710 0%, #04110B 100%); }
+    .rs-term {
+      position: absolute; left: 7%; top: 16%;
+      font-family: var(--mono); font-size: clamp(11px, 1.15vw, 15px); color: #45E08A;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .rs-term p { margin: 0; overflow: hidden; white-space: nowrap; width: 0; }
+    .rs-term .tr1 { animation: rs-type 7s steps(24) infinite; }
+    .rs-term .tr2 { animation: rs-type 7s steps(18) 1.2s infinite backwards; color: rgba(69,224,138,0.75); }
+    .rs-term .tr3 { animation: rs-type 7s steps(20) 2.1s infinite backwards; color: rgba(69,224,138,0.75); }
+    .rs-term .tr4 { animation: rs-type 7s steps(16) 3s infinite backwards; color: #9FF5C4; }
+    @keyframes rs-type { 0% { width: 0; } 38%, 92% { width: 100%; } 100% { width: 100%; opacity: 0; } }
+    .tcaret { display: inline-block; width: 7px; height: 0.95em; margin-left: 4px; background: #45E08A; vertical-align: text-bottom; animation: caret-blink 1.1s steps(1) infinite; }
+
+    /* 03 pulse — snapcut beats */
+    .rs-pulse { background: #14090E; }
+    .rs-beat {
+      position: absolute; inset: 0;
       display: grid; place-items: center;
-      box-shadow: 0 14px 34px -8px rgba(0,0,0,0.5), 0 0 0 8px rgba(255,255,255,0.12);
-      transition: transform .18s ease, box-shadow .22s ease;
+      opacity: 0;
+      animation: rs-snap 2.7s steps(1) infinite;
     }
-    .hv-play svg { transform: translateX(1px); }
-    .hv-play:hover { transform: translate(-50%,-50%) scale(1.07); box-shadow: 0 18px 42px -10px rgba(0,0,0,0.55), 0 0 0 10px rgba(255,106,44,0.28); }
-    .hv-play::before {
-      content: ""; position: absolute; inset: -8px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.45); animation: hvPing 2.6s ease-out infinite;
+    .rs-beat span {
+      font-family: var(--mono); font-weight: 700; color: #fff;
+      font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -0.04em;
     }
-    @keyframes hvPing { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.55); opacity: 0; } }
+    .rs-beat.b1 { background: radial-gradient(70% 70% at 35% 35%, #FF6A2C 0%, #2A0F14 75%); }
+    .rs-beat.b2 { background: radial-gradient(70% 70% at 65% 55%, #6D4AFF 0%, #110B2A 75%); animation-delay: 0.9s; }
+    .rs-beat.b3 { background: radial-gradient(70% 70% at 50% 70%, #E2405F 0%, #1D0A14 75%); animation-delay: 1.8s; }
+    @keyframes rs-snap { 0%, 32% { opacity: 1; } 33%, 100% { opacity: 0; } }
 
-    .hv-scrub {
-      position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 5;
-      display: flex; align-items: center; gap: 12px;
-      font-family: var(--mono); font-size: 11px; color: rgba(255,255,255,0.7);
+    /* 04 atlas — editorial calm */
+    .rs-atlas {
+      background:
+        radial-gradient(100% 80% at 80% 10%, #2B3A5E 0%, transparent 60%),
+        linear-gradient(180deg, #1A2238, #0D1120);
     }
-    .hv-tc { font-variant-numeric: tabular-nums; }
-    .hv-track { flex: 1; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.2); position: relative; }
-    .hv-prog { position: absolute; inset: 0 auto 0 0; width: 35%; border-radius: 999px; background: linear-gradient(90deg, var(--violet), var(--violet2)); }
-    .hv-prog::after {
-      content: ""; position: absolute; right: -5px; top: 50%; transform: translateY(-50%);
-      width: 11px; height: 11px; border-radius: 50%; background: #fff;
-      box-shadow: 0 0 0 3px rgba(109,74,255,0.4);
+    .rs-ed {
+      position: absolute; inset: 0;
+      display: grid; place-content: center; justify-items: center; gap: 18px;
+    }
+    .rs-ed em {
+      font-family: var(--mono); font-style: normal; font-weight: 400;
+      color: #E9EFF8; font-size: clamp(20px, 2.2vw, 30px); letter-spacing: 0.04em;
+      animation: rs-fade 6s ease-in-out infinite;
+    }
+    .rs-ed .ln {
+      width: 120px; height: 1px; background: rgba(233,239,248,0.5);
+      transform: scaleX(0); animation: rs-line 6s ease-in-out infinite;
+    }
+    .rs-ed .ln2 { animation-delay: 0.25s; }
+    @keyframes rs-line { 0% { transform: scaleX(0); } 30%, 78% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+    @keyframes rs-fade { 0% { opacity: 0; } 26%, 80% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* 05 quill — kinetic words */
+    .rs-quill { background: linear-gradient(135deg, #241A52 0%, #0C0822 100%); }
+    .rs-kin { position: absolute; inset: 0; }
+    .rs-kin .w {
+      position: absolute; inset: 0;
+      display: grid; place-items: center;
+      font-family: var(--mono); font-weight: 700; color: #fff;
+      font-size: clamp(34px, 4vw, 58px); letter-spacing: -0.05em;
+      opacity: 0;
+      animation: rs-word 4.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+    .rs-kin .w2 { animation-delay: 1.4s; }
+    .rs-kin .w3 { animation-delay: 2.8s; color: var(--violet2); }
+    @keyframes rs-word {
+      0% { opacity: 0; transform: translateY(26px) scale(0.96); }
+      8%, 28% { opacity: 1; transform: translateY(0) scale(1); }
+      36%, 100% { opacity: 0; transform: translateY(-22px) scale(1.02); }
+    }
+
+    /* 06 brew — warm product push */
+    .rs-brew {
+      background:
+        radial-gradient(100% 90% at 20% 100%, #4A2A12 0%, transparent 60%),
+        linear-gradient(180deg, #241407, #140B04);
+    }
+    .rs-prod {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -52%);
+      width: 52%;
+      background: #FFF8EE; border-radius: 12px;
+      padding: 18px 20px 16px;
+      display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+      box-shadow: 0 34px 70px -24px rgba(0,0,0,0.8);
+      animation: rs-push 6.5s ease-in-out -1s infinite;
+    }
+    .rs-prod .cup {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(140deg, #FFB65C, #E2662A);
+    }
+    .rs-prod b { font-family: var(--sans); font-weight: 700; color: #23130A; font-size: clamp(13px, 1.3vw, 18px); letter-spacing: -0.02em; }
+    .rs-prod .price { font-family: var(--mono); font-size: 11px; color: #A3703F; }
+
+    /* progress — ember playhead under the strip */
+    .sr-progress {
+      position: relative;
+      z-index: 2;
+      margin: 6vh auto 0;
+      width: min(320px, 60vw);
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+    }
+    .sr-fill {
+      position: absolute; inset: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--violet), var(--violet2));
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    .sr-spark {
+      position: absolute; left: 0; top: 50%;
+      width: 9px; height: 9px; border-radius: 50%;
+      transform: translate(-4px, -50%);
+      background: var(--heat);
+      box-shadow: 0 0 0 3px rgba(255,106,44,0.25), 0 0 12px 2px rgba(255,106,44,0.65);
+    }
+
+    /* mobile / reduced-motion: native horizontal scroll with snap */
+    @media (max-width: 820px) {
+      .showreel { height: auto; padding: 72px 0; }
+      .sr-sticky { position: static; height: auto; overflow: visible; }
+      .sr-track {
+        overflow-x: auto;
+        width: auto;
+        padding: 8px 20px 24px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .sr-track::-webkit-scrollbar { display: none; }
+      .reel { width: 82vw; scroll-snap-align: center; }
+      .sr-progress { display: none; }
+      .sr-head { margin-bottom: 28px; }
     }
 
     /* ---------- the five looks — a filmstrip of directed styles ---------- */
@@ -1399,9 +1364,113 @@ hr.rule {
     .lk-term .c .row { overflow: hidden; white-space: nowrap; animation: lktype 4s steps(16) infinite; }
     @keyframes lktype { 0%{ width: 0; } 55%,100%{ width: 100%; } }
 
+    /* ---------- detail polish ---------- */
+    /* eyebrow с боковыми линиями */
+    .section-head .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .section-head .eyebrow::before,
+    .section-head .eyebrow::after {
+      content: "";
+      width: 42px;
+      height: 1px;
+    }
+    .section-head .eyebrow::before { background: linear-gradient(90deg, transparent, currentColor); opacity: 0.45; }
+    .section-head .eyebrow::after { background: linear-gradient(90deg, currentColor, transparent); opacity: 0.45; }
+
+    /* градиентный хайрлайн сверху карточек на hover */
+    .feat::before,
+    .step::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 8%; right: 8%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(109,74,255,0.7), rgba(255,106,44,0.55), transparent);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      z-index: 1;
+    }
+    .feat:hover::before,
+    .step:hover::before { opacity: 1; }
+
+    .feat .icon {
+      background: linear-gradient(140deg, #0E0B16, #2A1F4F);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+      transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .feat:hover .icon {
+      transform: translateY(-2px);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.14), 0 10px 24px -10px rgba(109,74,255,0.55);
+    }
+    .step .num {
+      background: linear-gradient(120deg, var(--violet), #4B2FB8);
+      box-shadow: 0 8px 18px -8px rgba(109,74,255,0.7);
+    }
+
+    /* FAQ — hover и плавное раскрытие ответа */
+    .faq summary { transition: color 0.2s ease; padding: 2px 0; }
+    .faq summary:hover { color: var(--violet); }
+    .faq summary:hover::after { color: var(--violet); }
+    .faq details[open] summary { color: var(--violet); }
+    .faq .answer { animation: faq-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes faq-in {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* CTA — REC-чип в углу */
+    .cta-rec {
+      position: absolute;
+      top: 26px; right: 30px;
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+      color: var(--heat);
+      z-index: 1;
+    }
+    .cta-rec::before {
+      content: "";
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--heat);
+      animation: rec 1.3s ease-in-out infinite;
+    }
+
+    /* footer — гигантский ghost-вордмарк */
+    .footer { position: relative; overflow: hidden; }
+    .footer-ghost {
+      margin: 56px 0 -0.34em;
+      text-align: center;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: clamp(96px, 16.5vw, 250px);
+      letter-spacing: -0.055em;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(14,11,22,0.1);
+      user-select: none;
+      pointer-events: none;
+    }
+    .footer-ghost .fg-caret {
+      display: inline-block;
+      width: 0.085em; height: 0.74em;
+      margin-left: 0.06em;
+      border-radius: 0.02em;
+      background: rgba(255,90,31,0.35);
+      -webkit-text-stroke: 0;
+      animation: caret-blink 1.1s steps(1) infinite;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .rv { opacity: 1 !important; transform: none !important; }
       .lk-bg [class] { animation: none !important; }
+      /* showreel: живём статичным кадром */
+      .reel-stage [class] { animation: none !important; }
+      .rs-beat.b1, .rs-kin .w1 { opacity: 1 !important; }
+      .rs-term p { width: 100% !important; }
+      .rs-ed em { opacity: 1 !important; }
+      .rs-ed .ln { transform: scaleX(1) !important; }
+      .faq .answer { animation: none; }
       .grain, .hero-aura i, .strip-track, .cta-band::before,
       .price.popular::before, .url-halo::before, .hero h1 .v { animation: none !important; }
       .hl-in { transform: none; animation: none; }
@@ -1483,73 +1552,139 @@ hr.rule {
     </div>
   </div>
 
-  <!-- preview window -->
-  <div class="container">
-    <div class="hero-preview">
-      <div class="preview-window">
-        <div class="hv-bar">
-          <span class="hv-mark">
-            <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-              <rect width="28" height="28" rx="8" fill="#0B0814"/>
-              <text x="7" y="19.6" font-family="'JetBrains Mono', ui-monospace, Menlo, monospace" font-size="15" font-weight="600" letter-spacing="-0.4" fill="#F4F2FA">p</text>
-              <rect x="18" y="9" width="2" height="9.6" rx="1" fill="#FF5A1F"/>
-            </svg>
-          </span>
-          <span class="hv-name">launch-reel.mp4</span>
-          <span class="hv-tags"><span>16:9</span><span>1080p</span></span>
-        </div>
+</section>
 
-        <div class="preview-stage">
-          <!-- ============================================================
-               REAL VIDEO SLOT — drop the rendered reel here.
-               Replace the .hv-poster block below with:
-
-               <video class="hv-video" src="/launch-reel.mp4"
-                      poster="/launch-reel.jpg" autoplay muted loop playsinline></video>
-          ============================================================ -->
-          <div class="hv-poster">
-            <!-- a single composed frame of the output reel (brand-true, not a recording) -->
-            <div class="hv-card">
-              <div class="hv-card-side"><span class="on"></span><span></span><span></span><span></span></div>
-              <div class="hv-card-main">
-                <div class="hv-card-h"></div>
-                <div class="hv-card-stats">
-                  <div class="hv-stat"><b>$4.2k</b><i>MRR</i></div>
-                  <div class="hv-stat"><b>128</b><i>TRIALS</i></div>
-                  <div class="hv-stat"><b>+38%</b><i>WoW</i></div>
-                </div>
-                <div class="hv-card-chart">
-                  <svg viewBox="0 0 200 56" preserveAspectRatio="none">
-                    <defs><linearGradient id="hg" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0" stop-color="#6D4AFF" stop-opacity="0.32"/>
-                      <stop offset="1" stop-color="#6D4AFF" stop-opacity="0"/>
-                    </linearGradient></defs>
-                    <path d="M0 46 L24 42 L48 44 L72 33 L96 36 L120 24 L144 27 L168 13 L200 6 L200 56 L0 56 Z" fill="url(#hg)"/>
-                    <path d="M0 46 L24 42 L48 44 L72 33 L96 36 L120 24 L144 27 L168 13 L200 6" fill="none" stroke="#6D4AFF" stroke-width="1.8"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div class="hv-headline">ship <span>faster.</span></div>
-
-            <button class="hv-play" aria-label="play sample reel" onclick="location.href='/login'">
-              <svg width="22" height="22" viewBox="0 0 22 22"><path d="M6 4 L18 11 L6 18 Z" fill="currentColor"/></svg>
-            </button>
-          </div>
-
-          <div class="hv-scrub">
-            <span class="hv-tc">0:06</span>
-            <div class="hv-track"><div class="hv-prog"></div></div>
-            <span class="hv-tc">0:18</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="float-chip chip-zoom" aria-hidden="true"><span class="label">auto-zoom</span><strong>2.4×</strong></div>
-      <div class="float-chip chip-bg" aria-hidden="true"><span class="label">brand</span><span class="swatches"><i style="background:#6D4AFF"></i><i style="background:#FF6A2C"></i><i style="background:#FFE49A"></i><i style="background:#0E0B16"></i></span></div>
-      <div class="float-chip chip-cursor" aria-hidden="true"><span class="label">cursor</span><strong>click-ring on</strong></div>
+<!-- =========================== SHOWREEL (scroll-driven horizontal) =========================== -->
+<section class="showreel" id="showreel">
+  <div class="sr-sticky">
+    <div class="sr-head">
+      <span class="eyebrow">Showcase</span>
+      <h2 class="h-section">cut in pyrocut.</h2>
+      <p class="sr-sub">six reels, six brands — every one from a pasted url. keep scrolling.</p>
     </div>
+
+    <div class="sr-track" id="srTrack">
+
+      <!-- 01 · lumen — dolly -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#6D4AFF"></span>
+          <span class="reel-name">lumen-launch.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-lumen">
+          <div class="rs-card">
+            <div class="rs-side"><i class="on"></i><i></i><i></i></div>
+            <div class="rs-main">
+              <b class="rs-h"></b>
+              <div class="rs-stats">
+                <span><b>$4.2k</b><i>MRR</i></span>
+                <span><b>128</b><i>TRIALS</i></span>
+                <span><b>+38%</b><i>WOW</i></span>
+              </div>
+              <svg class="rs-chart" viewBox="0 0 200 44" preserveAspectRatio="none">
+                <path d="M0 38 L28 34 L56 36 L84 24 L112 27 L140 15 L170 18 L200 5 L200 44 L0 44 Z" fill="rgba(109,74,255,0.18)"/>
+                <path d="M0 38 L28 34 L56 36 L84 24 L112 27 L140 15 L170 18 L200 5" fill="none" stroke="#6D4AFF" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+          <div class="reel-scrub"><span>0:07</span><div class="rt"><div class="rf" style="width:34%"></div></div><span>0:24</span></div>
+          <div class="reel-tag"><b>lumen.finance</b><span>dolly · 24s</span></div>
+        </div>
+      </article>
+
+      <!-- 02 · shiplog — terminal -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#45E08A"></span>
+          <span class="reel-name">shiplog-reel.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-ship">
+          <div class="rs-term">
+            <p class="tr tr1">$ shiplog deploy --prod</p>
+            <p class="tr tr2">✓ build 142 · 3.8s</p>
+            <p class="tr tr3">✓ 12,408 events / day</p>
+            <p class="tr tr4">▮ uptime 99.98%<span class="tcaret"></span></p>
+          </div>
+          <div class="reel-scrub"><span>0:04</span><div class="rt"><div class="rf" style="width:22%"></div></div><span>0:20</span></div>
+          <div class="reel-tag"><b>shiplog.dev</b><span>terminal · 20s</span></div>
+        </div>
+      </article>
+
+      <!-- 03 · pulse — snapcut -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#FF6A2C"></span>
+          <span class="reel-name">pulse-social.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-pulse">
+          <div class="rs-beat b1"><span>run.</span></div>
+          <div class="rs-beat b2"><span>lift.</span></div>
+          <div class="rs-beat b3"><span>repeat.</span></div>
+          <div class="reel-scrub"><span>0:09</span><div class="rt"><div class="rf" style="width:56%"></div></div><span>0:16</span></div>
+          <div class="reel-tag"><b>pulse.fit</b><span>snapcut · 16s</span></div>
+        </div>
+      </article>
+
+      <!-- 04 · atlas — editorial -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#BFE2F5"></span>
+          <span class="reel-name">atlas-story.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-atlas">
+          <div class="rs-ed">
+            <i class="ln"></i>
+            <em>wander further.</em>
+            <i class="ln ln2"></i>
+          </div>
+          <div class="reel-scrub"><span>0:15</span><div class="rt"><div class="rf" style="width:54%"></div></div><span>0:28</span></div>
+          <div class="reel-tag"><b>atlas.travel</b><span>editorial · 28s</span></div>
+        </div>
+      </article>
+
+      <!-- 05 · quill — kinetic -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#9A6BFF"></span>
+          <span class="reel-name">quill-launch.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-quill">
+          <div class="rs-kin">
+            <span class="w w1">write.</span>
+            <span class="w w2">edit.</span>
+            <span class="w w3">ship.</span>
+          </div>
+          <div class="reel-scrub"><span>0:06</span><div class="rt"><div class="rf" style="width:33%"></div></div><span>0:18</span></div>
+          <div class="reel-tag"><b>quill.ai</b><span>kinetic · 18s</span></div>
+        </div>
+      </article>
+
+      <!-- 06 · brew — dolly -->
+      <article class="reel">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#FFE49A"></span>
+          <span class="reel-name">brew-drop.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage rs-brew">
+          <div class="rs-prod">
+            <i class="cup"></i>
+            <b>single origin, delivered.</b>
+            <span class="price">$18 / bag</span>
+          </div>
+          <div class="reel-scrub"><span>0:11</span><div class="rt"><div class="rf" style="width:50%"></div></div><span>0:22</span></div>
+          <div class="reel-tag"><b>brew.shop</b><span>dolly · 22s</span></div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="sr-progress" aria-hidden="true"><div class="sr-fill" id="srFill"></div><span class="sr-spark" id="srSpark"></span></div>
   </div>
 </section>
 
@@ -1557,34 +1692,48 @@ hr.rule {
 <div class="strip">
   <div class="strip-track">
     <div class="strip-inner">
-      <span>reads a landing built on <b>anything</b></span>
-      <span>Framer</span>
-      <span class="sep">·</span>
-      <span>Webflow</span>
-      <span class="sep">·</span>
-      <span>Next.js</span>
-      <span class="sep">·</span>
-      <span>Astro</span>
-      <span class="sep">·</span>
-      <span>Carrd</span>
-      <span class="sep">·</span>
-      <span>raw html</span>
-      <span class="sep">·</span>
+      <span class="strip-lead">reads a landing built on anything</span>
+      <span class="strip-item"><i></i>Framer</span>
+      <span class="strip-item"><i></i>Webflow</span>
+      <span class="strip-item"><i></i>Next.js</span>
+      <span class="strip-item"><i></i>Astro</span>
+      <span class="strip-item"><i></i>Carrd</span>
+      <span class="strip-item"><i></i>Wix</span>
+      <span class="strip-item"><i></i>Squarespace</span>
+      <span class="strip-item"><i></i>raw html</span>
     </div>
     <div class="strip-inner" aria-hidden="true">
-      <span>reads a landing built on <b>anything</b></span>
-      <span>Framer</span>
-      <span class="sep">·</span>
-      <span>Webflow</span>
-      <span class="sep">·</span>
-      <span>Next.js</span>
-      <span class="sep">·</span>
-      <span>Astro</span>
-      <span class="sep">·</span>
-      <span>Carrd</span>
-      <span class="sep">·</span>
-      <span>raw html</span>
-      <span class="sep">·</span>
+      <span class="strip-lead">reads a landing built on anything</span>
+      <span class="strip-item"><i></i>Framer</span>
+      <span class="strip-item"><i></i>Webflow</span>
+      <span class="strip-item"><i></i>Next.js</span>
+      <span class="strip-item"><i></i>Astro</span>
+      <span class="strip-item"><i></i>Carrd</span>
+      <span class="strip-item"><i></i>Wix</span>
+      <span class="strip-item"><i></i>Squarespace</span>
+      <span class="strip-item"><i></i>raw html</span>
+    </div>
+  </div>
+  <div class="strip-track rev" aria-hidden="true">
+    <div class="strip-inner">
+      <span class="strip-lead">and cuts</span>
+      <span class="strip-item"><i></i>launch teasers</span>
+      <span class="strip-item"><i></i>product hunt reels</span>
+      <span class="strip-item"><i></i>feature drops</span>
+      <span class="strip-item"><i></i>pricing teasers</span>
+      <span class="strip-item"><i></i>changelog clips</span>
+      <span class="strip-item"><i></i>demo tours</span>
+      <span class="strip-item"><i></i>x-ready mp4s</span>
+    </div>
+    <div class="strip-inner">
+      <span class="strip-lead">and cuts</span>
+      <span class="strip-item"><i></i>launch teasers</span>
+      <span class="strip-item"><i></i>product hunt reels</span>
+      <span class="strip-item"><i></i>feature drops</span>
+      <span class="strip-item"><i></i>pricing teasers</span>
+      <span class="strip-item"><i></i>changelog clips</span>
+      <span class="strip-item"><i></i>demo tours</span>
+      <span class="strip-item"><i></i>x-ready mp4s</span>
     </div>
   </div>
 </div>
@@ -1920,7 +2069,7 @@ hr.rule {
   <div class="container">
     <div class="section-head rv">
       <span class="eyebrow">Questions</span>
-      <h2 class="h-section">The fine print.</h2>
+      <h2 class="h-section">the fine print.</h2>
     </div>
 
     <div class="faq rv">
@@ -1956,6 +2105,7 @@ hr.rule {
 <section class="section-tight">
   <div class="container">
     <div class="cta-band rv">
+      <span class="cta-rec" aria-hidden="true">REC 00:00:18</span>
       <h2 class="h-section">paste a url.<br/>watch it become a&nbsp;video.</h2>
       <p class="sub" style="margin-top: 18px;">free to try, no card. your first launch reel is one paste away.</p>
       <div class="hero-cta">
@@ -2008,6 +2158,7 @@ hr.rule {
       <span>© 2026 pyrocut · paste a url, ship a reel</span>
       <span>v1.0 — June 2026</span>
     </div>
+    <div class="footer-ghost" aria-hidden="true">pyrocut<span class="fg-caret"></span></div>
   </div>
 </footer>
 
@@ -2050,26 +2201,46 @@ hr.rule {
     })();
   }
 
-  // gentle 3D tilt on the hero preview window (fine pointers only)
-  const previewWin = document.querySelector('.preview-window');
-  if (previewWin && !reduce && window.matchMedia('(pointer: fine)').matches) {
-    const wrap = previewWin.parentElement;
+  // showreel — vertical scroll drives the horizontal filmstrip;
+  // cards scale toward the viewport center, ember playhead tracks progress
+  (function () {
+    const section = document.getElementById('showreel');
+    const track = document.getElementById('srTrack');
+    const fill = document.getElementById('srFill');
+    const spark = document.getElementById('srSpark');
+    if (!section || !track) return;
+    const desktop = () => window.matchMedia('(min-width: 821px)').matches;
+    const cards = Array.from(track.querySelectorAll('.reel'));
     let raf = 0;
-    wrap.addEventListener('mousemove', (e) => {
-      const r = wrap.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        previewWin.style.transform = `perspective(1200px) rotateX(${(-y * 2.2).toFixed(2)}deg) rotateY(${(x * 2.6).toFixed(2)}deg)`;
+
+    function update() {
+      raf = 0;
+      if (!desktop() || reduce) {
+        track.style.transform = '';
+        cards.forEach((c) => { c.style.transform = ''; c.style.opacity = ''; });
+        return;
+      }
+      const vh = window.innerHeight;
+      const total = section.offsetHeight - vh;
+      const top = section.getBoundingClientRect().top;
+      const p = Math.min(1, Math.max(0, -top / total));
+      const dist = track.scrollWidth - window.innerWidth;
+      track.style.transform = `translate3d(${(-p * dist).toFixed(1)}px, 0, 0)`;
+      if (fill) fill.style.transform = `scaleX(${p.toFixed(4)})`;
+      if (spark) spark.style.left = `${(p * 100).toFixed(2)}%`;
+      const mid = window.innerWidth / 2;
+      cards.forEach((c) => {
+        const r = c.getBoundingClientRect();
+        const d = Math.min(1, Math.abs(r.left + r.width / 2 - mid) / mid);
+        c.style.transform = `scale(${(1.05 - d * 0.11).toFixed(3)})`;
+        c.style.opacity = (1 - d * 0.3).toFixed(3);
       });
-    });
-    wrap.addEventListener('mouseleave', () => {
-      cancelAnimationFrame(raf);
-      previewWin.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
-    });
-    previewWin.style.transition = 'transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1)';
-  }
+    }
+    function schedule() { if (!raf) raf = requestAnimationFrame(update); }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    update();
+  })();
 </script>
 
 </body>
