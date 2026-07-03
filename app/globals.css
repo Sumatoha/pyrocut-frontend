@@ -249,6 +249,31 @@
   );
 }
 
+/* градиентное violet→ember кольцо по периметру (border-image через mask).
+   Кладётся абсолютным спаном внутрь relative-контейнера с border-radius. */
+@utility ring-grad {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    120deg,
+    var(--color-violet),
+    var(--color-violet2) 35%,
+    var(--color-ember) 70%,
+    var(--color-violet)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 /* плавный лифт карточки: тень + подъём на фирменном easing */
 @utility lift {
   transition:

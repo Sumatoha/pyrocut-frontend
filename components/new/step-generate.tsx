@@ -10,6 +10,7 @@ import { videoStatusMeta, videoProgress } from '@/lib/status';
 import { Scrubber } from '@/components/ui/scrubber';
 import { Button } from '@/components/ui/button';
 import { RecTimer } from '@/components/motion/rec-timer';
+import { RenderStage } from '@/components/motion/render-stage';
 import { stageGradient } from '@/lib/thumb';
 
 const STAGE_COPY: Record<string, string> = {
@@ -69,12 +70,8 @@ export function StepGenerate({
         )}
         style={{ background: stageGradient(videoId ?? 'pending') }}
       >
+        <RenderStage label={meta.label} />
         <RecTimer time="00:00:00" className="absolute left-4 top-4" />
-        <div className="absolute inset-0 grid place-items-center">
-          <span className="font-[family-name:var(--font-mono)] text-[13px] text-white/70">
-            {meta.label}
-          </span>
-        </div>
         <div className="absolute inset-x-5 bottom-5">
           <Scrubber value={videoProgress(status)} active onDark />
         </div>

@@ -20,8 +20,21 @@ const FORMAT_INFO: Record<Format, { title: string; blurb: string; box: string }>
     },
   };
 
+/**
+ * Канон пресетов (волна 3 бэкенда, 2026-07-03) — 5 штук: dolly (←glass),
+ * snapcut (←neon), editorial, kinetic (←liquid), terminal. Легаси-значения
+ * бэкенд принимает алиасами, но в UI показываем только канон.
+ */
+const CANON_PRESETS = [
+  'dolly',
+  'snapcut',
+  'editorial',
+  'kinetic',
+  'terminal',
+] as const satisfies readonly Preset[];
+
 const PRESET_INFO: Record<
-  Preset,
+  (typeof CANON_PRESETS)[number],
   { title: string; blurb: string; bars: number[] }
 > = {
   dolly: {
@@ -39,30 +52,15 @@ const PRESET_INFO: Record<
     blurb: 'quiet, lots of air — lets it breathe',
     bars: [40, 45, 42, 48, 44],
   },
-  neon: {
-    title: 'neon',
-    blurb: 'glow, contrast, retro-future pulse',
-    bars: [85, 40, 95, 60, 90],
-  },
   kinetic: {
     title: 'kinetic',
     blurb: 'kinetic type — words snap and fly',
     bars: [95, 30, 85, 45, 100],
   },
-  glass: {
-    title: 'glass',
-    blurb: 'frosted, soft depth, gentle drift',
-    bars: [50, 60, 55, 66, 58],
-  },
   terminal: {
     title: 'terminal',
     blurb: 'mono, type-on, dev-tool energy',
     bars: [100, 100, 30, 100, 30],
-  },
-  liquid: {
-    title: 'liquid',
-    blurb: 'fluid morphs, organic easing',
-    bars: [40, 72, 54, 82, 48],
   },
 };
 
@@ -182,7 +180,7 @@ export function StepFormat({
       <fieldset>
         <legend className="microlabel mb-3">edit preset</legend>
         <div className="grid gap-4 sm:grid-cols-3">
-          {(Object.keys(PRESET_INFO) as Preset[]).map((p) => {
+          {CANON_PRESETS.map((p) => {
             const info = PRESET_INFO[p];
             const sel = preset === p;
             return (

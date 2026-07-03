@@ -161,15 +161,27 @@ function PlanColumn({
     <div
       className={cn(
         'relative flex flex-col gap-6 rounded-[var(--radius-card)] border p-7',
+        'transition-[transform,box-shadow] duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-1',
         dark
-          ? 'win-surface border-transparent shadow-win'
-          : 'border-hair bg-paper shadow-lift',
+          ? 'win-surface border-transparent shadow-win hover:shadow-[0_50px_100px_-45px_rgba(60,32,120,0.6)]'
+          : 'border-hair bg-paper shadow-lift hover:shadow-pop',
       )}
+      style={
+        dark
+          ? {
+              background:
+                'radial-gradient(120% 90% at 85% -10%, rgba(109,74,255,0.32), transparent 55%), radial-gradient(100% 80% at 0% 110%, rgba(255,90,31,0.2), transparent 55%), var(--color-win)',
+            }
+          : undefined
+      }
     >
       {card.popular && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full brand-grad px-3 py-1 text-[11px] font-medium text-white">
-          most popular
-        </span>
+        <>
+          <span aria-hidden="true" className="ring-grad" />
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full brand-grad px-3 py-1 text-[11px] font-medium text-white shadow-[0_6px_16px_-6px_rgba(109,74,255,0.7)]">
+            most popular
+          </span>
+        </>
       )}
 
       <div>

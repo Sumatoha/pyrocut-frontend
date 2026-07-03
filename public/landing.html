@@ -4,6 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>pyrocut — paste a landing url, get an animated demo video</title>
+  <meta name="description" content="pyrocut opens your landing url, reads the brand and cuts a directed launch video — five looks, 16:9 and 9:16, ready for product hunt and x." />
+  <meta property="og:title" content="pyrocut — paste a url, ship an animated demo video" />
+  <meta property="og:description" content="reads your brand from the url and renders a directed launch reel. no editor to learn." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.pyrocut.com" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -401,12 +407,142 @@ hr.rule {
   <style>
     /* -------- landing page only -------- */
 
+    /* ---------- film grain (cinema motif — the whole page is "footage") ---------- */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      z-index: 90;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain-shift 0.9s steps(4) infinite;
+    }
+    @keyframes grain-shift {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-1.5%, 1%); }
+      50% { transform: translate(1%, -1.5%); }
+      75% { transform: translate(-1%, -1%); }
+      100% { transform: translate(1.5%, 1%); }
+    }
+
+    /* primary buttons get a diagonal light sweep on hover */
+    .btn-primary { overflow: hidden; }
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.35) 50%, transparent 60%);
+      transform: translateX(-130%);
+      transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+      pointer-events: none;
+    }
+    .btn-primary:hover::after { transform: translateX(130%); }
+
+    /* nav scroll progress — violet→ember hairline */
+    .nav-progress {
+      position: absolute;
+      left: 0;
+      bottom: -1px;
+      height: 2px;
+      width: 100%;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: linear-gradient(90deg, var(--violet), var(--violet2) 60%, var(--heat));
+      z-index: 1;
+    }
+
     /* hero */
     .hero {
-      padding: 56px 0 24px;
+      padding: 64px 0 24px;
       text-align: center;
       position: relative;
       overflow: hidden;
+    }
+    /* aurora — slow drifting brand-light behind the headline */
+    .hero-aura {
+      position: absolute;
+      inset: -20% -10% auto;
+      height: 90%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero-aura i {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.5;
+    }
+    .hero-aura i:nth-child(1) {
+      width: 46vw; height: 46vw; max-width: 640px; max-height: 640px;
+      left: 4%; top: 0;
+      background: radial-gradient(circle, rgba(109,74,255,0.34), transparent 65%);
+      animation: aura-a 16s ease-in-out infinite;
+    }
+    .hero-aura i:nth-child(2) {
+      width: 38vw; height: 38vw; max-width: 520px; max-height: 520px;
+      right: 2%; top: 8%;
+      background: radial-gradient(circle, rgba(255,106,44,0.26), transparent 65%);
+      animation: aura-b 19s ease-in-out infinite;
+    }
+    .hero-aura i:nth-child(3) {
+      width: 30vw; height: 30vw; max-width: 420px; max-height: 420px;
+      left: 38%; top: 26%;
+      background: radial-gradient(circle, rgba(220,211,255,0.55), transparent 65%);
+      animation: aura-a 22s ease-in-out infinite reverse;
+    }
+    @keyframes aura-a {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(6%, 9%) scale(1.12); }
+    }
+    @keyframes aura-b {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-8%, 6%) scale(0.94); }
+    }
+
+    /* headline reveal — each line rises out of its own clip on load */
+    .hl {
+      display: block;
+      overflow: hidden;
+      padding: 0.18em 0.35em;
+      margin: -0.18em -0.35em;
+    }
+    .hl-in {
+      display: inline-block;
+      transform: translateY(140%);
+      animation: hl-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .hl:nth-child(1) .hl-in { animation-delay: 0.05s; }
+    .hl:nth-child(2) .hl-in { animation-delay: 0.16s; }
+    .hl:nth-child(3) .hl-in { animation-delay: 0.27s; }
+    @keyframes hl-rise {
+      to { transform: translateY(0); }
+    }
+    .fade-up {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .fade-d1 { animation-delay: 0.45s; }
+    .fade-d2 { animation-delay: 0.58s; }
+    .fade-d3 { animation-delay: 0.72s; }
+    .fade-d4 { animation-delay: 0.86s; }
+    @keyframes fade-up {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* the word "animated" — living gradient */
+    .hero h1 .v {
+      background: linear-gradient(100deg, var(--violet) 10%, var(--violet2) 38%, var(--heat) 62%, var(--violet) 90%);
+      background-size: 250% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: var(--violet);
+      animation: v-shimmer 6s ease-in-out infinite;
+    }
+    @keyframes v-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
     .hero-badge { margin-bottom: 28px; display: inline-flex; }
     .hero h1 { margin: 0 auto; max-width: 1000px; }
@@ -450,6 +586,32 @@ hr.rule {
     .url-field:focus-within {
       border-color: var(--violet);
       box-shadow: 0 0 0 4px rgba(109,74,255,0.14), var(--shadow-lift);
+    }
+    /* breathing brand-light ring around the signature paste field */
+    .url-halo {
+      position: relative;
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .url-halo::before {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: var(--r-pill);
+      background: linear-gradient(100deg, rgba(109,74,255,0.55), rgba(154,107,255,0.3), rgba(255,106,44,0.5));
+      background-size: 220% auto;
+      filter: blur(10px);
+      opacity: 0.35;
+      z-index: 0;
+      animation: halo-breathe 4.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .url-halo:focus-within::before { opacity: 0.65; }
+    .url-halo .url-field { position: relative; z-index: 1; }
+    @keyframes halo-breathe {
+      0%, 100% { opacity: 0.28; background-position: 0% 50%; }
+      50% { opacity: 0.5; background-position: 100% 50%; }
     }
     .url-ico { display: inline-flex; color: var(--muted); flex-shrink: 0; }
     .url-scheme { font-family: var(--mono); font-size: 15px; color: var(--faint); flex-shrink: 0; }
@@ -729,27 +891,45 @@ hr.rule {
     }
     .float-chip .label { color: rgba(255,255,255,0.55); font-size: 11px; }
     .float-chip strong { font-weight: 500; }
-    .chip-zoom { top: 10%; left: 6%; }
-    .chip-cursor { bottom: 12%; right: 6%; }
-    .chip-bg { top: 14%; right: 7%; }
+    .chip-zoom { top: 10%; left: -2.5%; animation: chip-float 6s ease-in-out infinite; }
+    .chip-cursor { bottom: 14%; right: -2.5%; animation: chip-float 7s ease-in-out -2.4s infinite; }
+    .chip-bg { top: 16%; right: -3%; animation: chip-float 6.5s ease-in-out -4s infinite; }
+    @keyframes chip-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    @media (max-width: 900px) { .float-chip { display: none; } }
 
-    /* ------------- proof strip ------------- */
+    /* ------------- proof strip — infinite marquee ------------- */
     .strip {
-      padding: 28px 0;
+      padding: 26px 0;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
       overflow: hidden;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
     }
+    .strip-track {
+      display: flex;
+      width: max-content;
+      animation: marquee 28s linear infinite;
+    }
+    .strip:hover .strip-track { animation-play-state: paused; }
     .strip-inner {
       display: flex;
-      gap: 48px;
+      gap: 56px;
       align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
+      padding-right: 56px;
+      flex-shrink: 0;
       color: var(--muted);
       font-size: 13px;
+      white-space: nowrap;
     }
     .strip-inner b { color: var(--ink); font-weight: 500; }
+    .strip-inner .sep { color: var(--faint); }
+    @keyframes marquee {
+      to { transform: translateX(-50%); }
+    }
 
     /* ------------- features grid ------------- */
     .feat-grid {
@@ -769,6 +949,12 @@ hr.rule {
       display: flex;
       flex-direction: column;
       gap: 14px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.25s ease;
+    }
+    .feat:hover {
+      transform: translateY(-5px);
+      border-color: var(--line-strong);
+      box-shadow: var(--shadow-lift);
     }
     .feat .icon {
       width: 36px; height: 36px;
@@ -806,7 +992,15 @@ hr.rule {
       display: flex;
       flex-direction: column;
       gap: 16px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.25s ease;
     }
+    .step:hover {
+      transform: translateY(-5px);
+      border-color: var(--line-strong);
+      box-shadow: var(--shadow-lift);
+    }
+    .step:hover .blob { transform: scale(1.15); }
+    .step .blob { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
     .step .num {
       width: 38px; height: 38px;
       border-radius: 50%;
@@ -890,12 +1084,38 @@ hr.rule {
       display: flex; flex-direction: column;
       gap: 28px;
       position: relative;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
     }
+    .price:hover { transform: translateY(-4px); box-shadow: var(--shadow-card), 0 24px 48px -28px rgba(14,11,22,0.25); }
     .price.popular {
-      background: var(--ink);
+      background:
+        radial-gradient(120% 90% at 85% -10%, rgba(109,74,255,0.35), transparent 55%),
+        radial-gradient(100% 80% at 0% 110%, rgba(255,106,44,0.22), transparent 55%),
+        var(--noir);
       color: white;
-      border-color: var(--ink);
+      border-color: transparent;
+      box-shadow: 0 30px 70px -30px rgba(40,22,80,0.55);
     }
+    /* animated violet→ember ring around the popular plan */
+    .price.popular::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border-radius: inherit;
+      padding: 1.5px;
+      background: linear-gradient(120deg, var(--violet), var(--violet2) 35%, var(--heat) 70%, var(--violet));
+      background-size: 250% auto;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      animation: ring-slide 5s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes ring-slide {
+      to { background-position: 250% 50%; }
+    }
+    .price.popular:hover { transform: translateY(-6px); box-shadow: 0 40px 90px -32px rgba(60,32,120,0.65); }
     .price.popular .price-name,
     .price.popular .price-sub,
     .price.popular .price-amount,
@@ -975,21 +1195,38 @@ hr.rule {
 
     /* CTA band */
     .cta-band {
-      background: var(--ink);
+      background: var(--noir);
       color: white;
       border-radius: var(--r-xl);
       padding: 84px 48px;
       text-align: center;
       position: relative;
       overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 40px 90px -40px rgba(40,22,80,0.5);
     }
     .cta-band::before {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: -30%;
       background:
-        radial-gradient(40% 60% at 15% 0%, rgba(109,74,255,0.55), transparent 60%),
-        radial-gradient(40% 60% at 85% 100%, rgba(255,106,44,0.55), transparent 60%);
+        radial-gradient(30% 40% at 20% 15%, rgba(109,74,255,0.6), transparent 60%),
+        radial-gradient(30% 40% at 80% 85%, rgba(255,106,44,0.55), transparent 60%),
+        radial-gradient(25% 35% at 65% 20%, rgba(154,107,255,0.35), transparent 60%);
+      pointer-events: none;
+      animation: cta-aurora 14s ease-in-out infinite;
+    }
+    @keyframes cta-aurora {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(3%, -4%) rotate(2deg); }
+      66% { transform: translate(-3%, 3%) rotate(-2deg); }
+    }
+    /* dot texture matching the hero stage */
+    .cta-band::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+      background-size: 30px 30px;
       pointer-events: none;
     }
     .cta-band > * { position: relative; z-index: 1; }
@@ -1110,26 +1347,41 @@ hr.rule {
       box-shadow: 0 0 0 3px rgba(109,74,255,0.4);
     }
 
-    /* ---------- the eight looks gallery ---------- */
-    .looks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    @media (max-width: 980px) { .looks { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 540px) { .looks { grid-template-columns: 1fr; } }
+    /* ---------- the five looks — a filmstrip of directed styles ---------- */
+    .looks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    @media (max-width: 1080px) { .looks { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .looks { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 440px) { .looks { grid-template-columns: 1fr; } }
     .look {
       position: relative; aspect-ratio: 4/5; border-radius: var(--r-lg); overflow: hidden;
       background: var(--noir); border: 1px solid rgba(255,255,255,0.08);
-      transition: transform .25s ease, box-shadow .25s ease;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+      cursor: pointer;
     }
-    .look:hover { transform: translateY(-5px); box-shadow: var(--shadow-lift); }
-    .lk-canvas { position: absolute; inset: 0; overflow: hidden; }
-    .look::after { content: ""; position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, transparent 42%, rgba(8,5,18,0.86) 100%); }
-    .lk-info { position: absolute; left: 16px; right: 16px; bottom: 15px; z-index: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
-    .lk-nm { color: #fff; font-family: var(--mono); font-weight: 700; font-size: 17px; letter-spacing: -0.02em; }
-    .lk-ds { color: rgba(255,255,255,0.62); font-size: 11px; margin-top: 4px; line-height: 1.4; }
+    .look:hover { transform: translateY(-6px) scale(1.015); box-shadow: var(--shadow-lift), 0 0 0 1px rgba(109,74,255,0.25); }
+    .lk-canvas { position: absolute; inset: 0; overflow: hidden; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .look:hover .lk-canvas { transform: scale(1.06); }
+    .look::after { content: ""; position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, transparent 42%, rgba(8,5,18,0.86) 100%); pointer-events: none; }
+    .lk-info { position: absolute; left: 14px; right: 14px; bottom: 13px; z-index: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+    .lk-nm { color: #fff; font-family: var(--mono); font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
+    .lk-ds { color: rgba(255,255,255,0.62); font-size: 10.5px; margin-top: 4px; line-height: 1.4; }
     .lk-sec { font-family: var(--mono); font-size: 10px; color: var(--ember); font-weight: 600; flex-shrink: 0; }
     .lk-bg { position: absolute; inset: 0; }
+    /* REC chip appears on hover — "this one is rolling" */
+    .lk-rec {
+      position: absolute; top: 12px; right: 12px; z-index: 3;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; color: var(--heat);
+      background: rgba(10,7,20,0.65); backdrop-filter: blur(8px);
+      padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
+      opacity: 0; transform: translateY(-4px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .lk-rec::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--heat); animation: rec 1.3s ease-in-out infinite; }
+    .look:hover .lk-rec { opacity: 1; transform: none; }
 
     .lk-dolly { background: radial-gradient(70% 60% at 50% 35%, #3a2a7a, #100b26); }
-    .lk-dolly .sq { position: absolute; inset: 26% 24%; border-radius: 9px; background: #fff; opacity: .92; animation: lkpush 3.6s ease-in-out infinite; }
+    .lk-dolly .sq { position: absolute; inset: 26% 24%; border-radius: 9px; background: #fff; opacity: .92; animation: lkpush 3.6s ease-in-out infinite; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6); }
     @keyframes lkpush { 50% { transform: scale(1.24); } }
     .lk-snap { background: #120b26; }
     .lk-snap .b { position: absolute; inset: 0; animation: lksnap 1.6s steps(1) infinite; }
@@ -1139,34 +1391,33 @@ hr.rule {
     .lk-edit { background: linear-gradient(180deg, #1a1338, #0c0820); }
     .lk-edit .ln { position: absolute; left: 18%; right: 18%; top: 46%; height: 2px; background: rgba(255,255,255,0.55); transform: scaleX(0); transform-origin: left; animation: lkrev 4s ease-in-out infinite; }
     @keyframes lkrev { 0%{transform:scaleX(0);} 45%,70%{transform:scaleX(1);} 100%{transform:scaleX(0); transform-origin:right;} }
-    .lk-neon { background: radial-gradient(60% 60% at 50% 44%, #1b1242, #0a0820); }
-    .lk-neon .g { position: absolute; top: 50%; left: 50%; width: 46%; aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; border: 2px solid var(--heat); animation: lkglow 2.4s ease-out infinite; }
-    @keyframes lkglow { 0% { transform: translate(-50%,-50%) scale(.62); box-shadow: 0 0 0 0 rgba(255,106,44,0.45); } 100% { transform: translate(-50%,-50%) scale(1.15); box-shadow: 0 0 0 16px rgba(255,106,44,0); } }
     .lk-kin { background: linear-gradient(135deg, #241a52, #0c0822); display: grid; place-items: center; }
-    .lk-kin .t { font-family: var(--mono); font-weight: 700; color: #fff; font-size: 26px; letter-spacing: -0.04em; animation: lkkin 2.6s ease-in-out infinite; }
+    .lk-kin .t { font-family: var(--mono); font-weight: 700; color: #fff; font-size: 24px; letter-spacing: -0.04em; animation: lkkin 2.6s ease-in-out infinite; }
     @keyframes lkkin { 0%,100%{ transform: translateY(7px); opacity:.4;} 50%{ transform: none; opacity:1;} }
-    .lk-glass { background: linear-gradient(150deg, #243a72, #0c1226); }
-    .lk-glass .p { position: absolute; left: 20%; right: 20%; height: 34%; border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.06)); border: 1px solid rgba(255,255,255,0.32); box-shadow: 0 10px 30px -12px rgba(0,0,0,0.5); animation: lkscroll 4s ease-in-out infinite; }
-    @keyframes lkscroll { 0%{ top: 56%; } 50%{ top: 12%; } 100%{ top: 56%; } }
     .lk-term { background: #06120c; }
-    .lk-term .c { position: absolute; left: 16px; top: 18px; right: 16px; color: #45e08a; font-family: var(--mono); font-size: 12px; }
+    .lk-term .c { position: absolute; left: 14px; top: 16px; right: 14px; color: #45e08a; font-family: var(--mono); font-size: 11px; }
     .lk-term .c .row { overflow: hidden; white-space: nowrap; animation: lktype 4s steps(16) infinite; }
     @keyframes lktype { 0%{ width: 0; } 55%,100%{ width: 100%; } }
-    .lk-liq { background: radial-gradient(70% 70% at 50% 50%, #4a2475, #0c0820); }
-    .lk-liq .blob { position: absolute; inset: 27%; border-radius: 46% 54% 60% 40%; background: linear-gradient(135deg, var(--violet2), var(--heat)); animation: lkliq 5s ease-in-out infinite; }
-    @keyframes lkliq { 33% { border-radius: 60% 40% 44% 56%; transform: rotate(40deg) scale(1.1);} 66% { border-radius: 40% 60% 56% 44%; transform: rotate(-30deg) scale(.95);} }
 
     @media (prefers-reduced-motion: reduce) {
       .rv { opacity: 1 !important; transform: none !important; }
       .lk-bg [class] { animation: none !important; }
+      .grain, .hero-aura i, .strip-track, .cta-band::before,
+      .price.popular::before, .url-halo::before, .hero h1 .v { animation: none !important; }
+      .hl-in { transform: none; animation: none; }
+      .fade-up { opacity: 1; transform: none; animation: none; }
+      .btn-primary::after { display: none; }
     }
   </style>
   <noscript><style>.rv { opacity: 1 !important; transform: none !important; }</style></noscript>
 </head>
 <body>
 
+<div class="grain" aria-hidden="true"></div>
+
 <!-- =========================== NAV =========================== -->
 <nav class="nav" id="nav">
+  <span class="nav-progress" id="navProgress" aria-hidden="true"></span>
   <div class="container nav-inner">
     <a href="/" class="brand" aria-label="pyrocut home">pyrocut<span class="brand-caret" aria-hidden="true"></span></a>
     <div class="nav-links">
@@ -1184,41 +1435,44 @@ hr.rule {
 
 <!-- =========================== HERO =========================== -->
 <section class="hero">
+  <div class="hero-aura" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="container">
-    <span class="pill hero-badge"><span class="dot"></span> v1.0 — now reads any landing url → animated reel</span>
+    <span class="pill hero-badge fade-up" style="animation-delay: 0s"><span class="dot"></span> v1.0 — now reads any landing url → animated reel</span>
 
     <h1 class="h-display">
-      paste a url.<br/>
-      ship an <span class="v">animated</span><br/>
-      <span class="highlight">demo&nbsp;video.</span>
+      <span class="hl"><span class="hl-in">paste a url.</span></span>
+      <span class="hl"><span class="hl-in">ship an <span class="v">animated</span></span></span>
+      <span class="hl"><span class="hl-in"><span class="highlight">demo&nbsp;video.</span></span></span>
     </h1>
 
-    <p class="sub">
-      pyrocut opens your landing, reads the brand — palette, fonts, the hero copy — and pulls your real screens. add a screenshot or a line of brief, pick one of eight looks, and it renders a polished product video. ready for product hunt and x.
+    <p class="sub fade-up fade-d1">
+      pyrocut opens your landing, reads the brand — palette, fonts, the hero copy — and pulls your real screens. add a screenshot or a line of brief, pick a look, and it renders a directed product video. ready for product hunt and x.
     </p>
 
-    <div class="hero-cta">
-      <form class="url-field" onsubmit="location.href='/login'; return false">
-        <span class="url-ico">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="9" cy="9" r="7"/>
-            <path d="M2 9 H16 M9 2 C11.5 4.5 11.5 13.5 9 16 C6.5 13.5 6.5 4.5 9 2 Z"/>
-          </svg>
-        </span>
-        <span class="url-scheme">https://</span>
-        <input class="url-input" type="text" placeholder="yoursaas.com" aria-label="paste your landing url" />
-        <button class="btn btn-primary" type="submit">start free →</button>
-      </form>
+    <div class="hero-cta fade-up fade-d2">
+      <div class="url-halo">
+        <form class="url-field" onsubmit="location.href='/login'; return false">
+          <span class="url-ico">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="9" cy="9" r="7"/>
+              <path d="M2 9 H16 M9 2 C11.5 4.5 11.5 13.5 9 16 C6.5 13.5 6.5 4.5 9 2 Z"/>
+            </svg>
+          </span>
+          <span class="url-scheme">https://</span>
+          <input class="url-input" type="text" id="urlInput" placeholder="yoursaas.com" aria-label="paste your landing url" />
+          <button class="btn btn-primary" type="submit">start free →</button>
+        </form>
+      </div>
     </div>
 
-    <a href="#looks" class="hero-watch">
+    <a href="#looks" class="hero-watch fade-up fade-d3">
       <span class="play-btn">
         <svg width="9" height="9" viewBox="0 0 9 9"><path d="M2 1 L8 4.5 L2 8 Z" fill="white"/></svg>
       </span>
-      see the eight looks
+      see the five looks
     </a>
 
-    <div class="hero-meta">
+    <div class="hero-meta fade-up fade-d4">
       <span class="meta">no editor to learn</span>
       <span class="hero-meta-dot"></span>
       <span class="meta">16:9 · 9:16</span>
@@ -1291,25 +1545,47 @@ hr.rule {
           </div>
         </div>
       </div>
+
+      <div class="float-chip chip-zoom" aria-hidden="true"><span class="label">auto-zoom</span><strong>2.4×</strong></div>
+      <div class="float-chip chip-bg" aria-hidden="true"><span class="label">brand</span><span class="swatches"><i style="background:#6D4AFF"></i><i style="background:#FF6A2C"></i><i style="background:#FFE49A"></i><i style="background:#0E0B16"></i></span></div>
+      <div class="float-chip chip-cursor" aria-hidden="true"><span class="label">cursor</span><strong>click-ring on</strong></div>
     </div>
   </div>
 </section>
 
 <!-- =========================== STRIP =========================== -->
 <div class="strip">
-  <div class="container strip-inner">
-    <span>reads a landing built on <b>anything</b></span>
-    <span>Framer</span>
-    <span>·</span>
-    <span>Webflow</span>
-    <span>·</span>
-    <span>Next.js</span>
-    <span>·</span>
-    <span>Astro</span>
-    <span>·</span>
-    <span>Carrd</span>
-    <span>·</span>
-    <span>raw html</span>
+  <div class="strip-track">
+    <div class="strip-inner">
+      <span>reads a landing built on <b>anything</b></span>
+      <span>Framer</span>
+      <span class="sep">·</span>
+      <span>Webflow</span>
+      <span class="sep">·</span>
+      <span>Next.js</span>
+      <span class="sep">·</span>
+      <span>Astro</span>
+      <span class="sep">·</span>
+      <span>Carrd</span>
+      <span class="sep">·</span>
+      <span>raw html</span>
+      <span class="sep">·</span>
+    </div>
+    <div class="strip-inner" aria-hidden="true">
+      <span>reads a landing built on <b>anything</b></span>
+      <span>Framer</span>
+      <span class="sep">·</span>
+      <span>Webflow</span>
+      <span class="sep">·</span>
+      <span>Next.js</span>
+      <span class="sep">·</span>
+      <span>Astro</span>
+      <span class="sep">·</span>
+      <span>Carrd</span>
+      <span class="sep">·</span>
+      <span>raw html</span>
+      <span class="sep">·</span>
+    </div>
   </div>
 </div>
 
@@ -1344,7 +1620,7 @@ hr.rule {
         <div class="blob" style="background: var(--pastel-butter)"></div>
         <div class="num">02</div>
         <h3>direct.</h3>
-        <p>add a screenshot or a line of brief if you want, then pick one of eight looks and a format. pyrocut storyboards the beats and times every move.</p>
+        <p>add a screenshot or a line of brief if you want, then pick one of five looks and a format. pyrocut storyboards the beats and times every move.</p>
         <div class="visual">
           <svg width="100%" height="100%" viewBox="0 0 240 80" preserveAspectRatio="xMidYMid meet">
             <line x1="14" y1="40" x2="226" y2="40" stroke="#0B0B0E" stroke-width="1" opacity="0.4"/>
@@ -1488,8 +1764,8 @@ hr.rule {
             <path d="M2 7 L6 7 M12 7 L16 7 M2 11 L6 11 M12 11 L16 11"/>
           </svg>
         </div>
-        <h3>eight looks, never the same.</h3>
-        <p>dolly, snapcut, editorial, neon, kinetic, glass, terminal, liquid — each its own rhythm. spin a few variations and pick the cut that lands.</p>
+        <h3>five looks, never the same.</h3>
+        <p>dolly, snapcut, editorial, kinetic, terminal — each its own rhythm and energy. spin a few variations and pick the cut that lands.</p>
         <div class="preview">
           <svg width="100%" height="100%" viewBox="0 0 300 90" preserveAspectRatio="xMidYMid meet">
             <rect x="14" y="22" width="84" height="46" rx="6" fill="#120E1F"/>
@@ -1535,43 +1811,36 @@ hr.rule {
 <section class="section" id="looks">
   <div class="container">
     <div class="section-head rv">
-      <span class="eyebrow">Eight directed looks</span>
+      <span class="eyebrow">Five directed looks</span>
       <h2 class="h-section">one paste,<br/><span style="color: var(--muted)">never one template.</span></h2>
       <p class="sub">each look is a different rhythm and energy — calm dolly, hard beat-cuts, quiet editorial. the colors and mood come from <em>your</em> page, so two reels never feel the same.</p>
     </div>
 
     <div class="looks rv">
-      <div class="look">
+      <div class="look" onclick="location.href='/login'">
         <div class="lk-canvas"><div class="lk-bg lk-dolly"><div class="sq"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">dolly</div><div class="lk-ds">cinematic push-in on the dashboard</div></div><span class="lk-sec">22s</span></div>
+        <span class="lk-rec">REC</span>
+        <div class="lk-info"><div><div class="lk-nm">dolly</div><div class="lk-ds">cinematic push-in on the dashboard</div></div><span class="lk-sec">24s</span></div>
       </div>
-      <div class="look">
+      <div class="look" onclick="location.href='/login'">
         <div class="lk-canvas"><div class="lk-bg lk-snap"><div class="b"></div><div class="b"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">snapcut</div><div class="lk-ds">hard beat-cuts, fast crops</div></div><span class="lk-sec">13s</span></div>
+        <span class="lk-rec">REC</span>
+        <div class="lk-info"><div><div class="lk-nm">snapcut</div><div class="lk-ds">hard beat-cuts, fast crops</div></div><span class="lk-sec">16s</span></div>
       </div>
-      <div class="look">
+      <div class="look" onclick="location.href='/login'">
         <div class="lk-canvas"><div class="lk-bg lk-edit"><div class="ln"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">editorial</div><div class="lk-ds">air, long holds, one reveal</div></div><span class="lk-sec">22s</span></div>
+        <span class="lk-rec">REC</span>
+        <div class="lk-info"><div><div class="lk-nm">editorial</div><div class="lk-ds">air, long holds, one reveal</div></div><span class="lk-sec">28s</span></div>
       </div>
-      <div class="look">
-        <div class="lk-canvas"><div class="lk-bg lk-neon"><div class="g"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">neon</div><div class="lk-ds">punchy montage with a glow</div></div><span class="lk-sec">16s</span></div>
-      </div>
-      <div class="look">
+      <div class="look" onclick="location.href='/login'">
         <div class="lk-canvas"><div class="lk-bg lk-kin"><div class="t">ship.</div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">kinetic</div><div class="lk-ds">typography-led, copy first</div></div><span class="lk-sec">14s</span></div>
+        <span class="lk-rec">REC</span>
+        <div class="lk-info"><div><div class="lk-nm">kinetic</div><div class="lk-ds">typography-led, copy first</div></div><span class="lk-sec">18s</span></div>
       </div>
-      <div class="look">
-        <div class="lk-canvas"><div class="lk-bg lk-glass"><div class="p"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">glass</div><div class="lk-ds">smooth glassy product scroll</div></div><span class="lk-sec">18s</span></div>
-      </div>
-      <div class="look">
+      <div class="look" onclick="location.href='/login'">
         <div class="lk-canvas"><div class="lk-bg lk-term"><div class="c"><div class="row">$ pyrocut --ship</div></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">terminal</div><div class="lk-ds">live counters on your metrics</div></div><span class="lk-sec">16s</span></div>
-      </div>
-      <div class="look">
-        <div class="lk-canvas"><div class="lk-bg lk-liq"><div class="blob"></div></div></div>
-        <div class="lk-info"><div><div class="lk-nm">liquid</div><div class="lk-ds">fluid, morphing product tour</div></div><span class="lk-sec">20s</span></div>
+        <span class="lk-rec">REC</span>
+        <div class="lk-info"><div><div class="lk-nm">terminal</div><div class="lk-ds">live counters on your metrics</div></div><span class="lk-sec">20s</span></div>
       </div>
     </div>
   </div>
@@ -1619,7 +1888,7 @@ hr.rule {
         <ul class="check-list">
           <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> unlimited videos</li>
           <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> 1080p export · no watermark</li>
-          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> all eight looks</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> all five looks</li>
           <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> saved brand kit + variations</li>
           <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#FF6A2C" stroke-width="2"><path d="M3 8 L7 12 L13 4"/></svg> private share links</li>
         </ul>
@@ -1743,11 +2012,14 @@ hr.rule {
 </footer>
 
 <script>
-  // sticky nav border
+  // sticky nav border + scroll progress
   const nav = document.getElementById('nav');
+  const navProgress = document.getElementById('navProgress');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 8);
-  });
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    navProgress.style.transform = `scaleX(${max > 0 ? Math.min(window.scrollY / max, 1) : 0})`;
+  }, { passive: true });
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1759,6 +2031,44 @@ hr.rule {
       entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
     document.querySelectorAll('.rv').forEach((el) => io.observe(el));
+  }
+
+  // typing placeholder — the paste field types real-sounding domains
+  const urlInput = document.getElementById('urlInput');
+  if (urlInput && !reduce) {
+    const domains = ['yoursaas.com', 'getlaunch.app', 'shipfast.dev', 'usemetric.io'];
+    let d = 0, ch = 0, deleting = false;
+    (function type() {
+      if (document.activeElement === urlInput || urlInput.value) { setTimeout(type, 2000); return; }
+      const word = domains[d];
+      ch += deleting ? -1 : 1;
+      urlInput.placeholder = word.slice(0, ch);
+      let wait = deleting ? 45 : 90;
+      if (!deleting && ch === word.length) { deleting = true; wait = 2200; }
+      else if (deleting && ch === 0) { deleting = false; d = (d + 1) % domains.length; wait = 500; }
+      setTimeout(type, wait);
+    })();
+  }
+
+  // gentle 3D tilt on the hero preview window (fine pointers only)
+  const previewWin = document.querySelector('.preview-window');
+  if (previewWin && !reduce && window.matchMedia('(pointer: fine)').matches) {
+    const wrap = previewWin.parentElement;
+    let raf = 0;
+    wrap.addEventListener('mousemove', (e) => {
+      const r = wrap.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        previewWin.style.transform = `perspective(1200px) rotateX(${(-y * 2.2).toFixed(2)}deg) rotateY(${(x * 2.6).toFixed(2)}deg)`;
+      });
+    });
+    wrap.addEventListener('mouseleave', () => {
+      cancelAnimationFrame(raf);
+      previewWin.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
+    });
+    previewWin.style.transition = 'transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1)';
   }
 </script>
 

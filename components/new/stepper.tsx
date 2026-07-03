@@ -34,7 +34,7 @@ export function Stepper({ current }: { current: number }) {
               <span
                 className={cn(
                   'ml-1 h-px flex-1 transition-colors duration-500',
-                  done ? 'bg-violet' : 'bg-hair',
+                  done ? 'brand-grad' : 'bg-hair',
                 )}
               />
             )}
