@@ -10,7 +10,7 @@ import { useToast } from '@/components/ui/toast';
 import { Stepper } from './stepper';
 import { StepUrl } from './step-url';
 import { StepBrand } from './step-brand';
-import { StepFormat } from './step-format';
+import { StepFormat, type FormatPick } from './step-format';
 import { StepGenerate } from './step-generate';
 
 function guessKind(name: string): 'logo' | 'screenshot' {
@@ -27,6 +27,9 @@ export function Wizard({ plan }: { plan: Plan }) {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [videoId, setVideoId] = useState<string | null>(null);
   const [format, setFormat] = useState<Format>('16:9');
+  const [batchCount, setBatchCount] = useState<number | null>(null);
+  // Последний сабмит шага «pick the cut» — возврат после ошибки не сбрасывает форму.
+  const [lastPick, setLastPick] = useState<FormatPick | null>(null);
 
   const [creating, setCreating] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -96,7 +99,12 @@ export function Wizard({ plan }: { plan: Plan }) {
     prompt: string,
   ) {
     setFormat(f);
+    setLastPick({ format: f, count, preset, prompt });
     setGenerating(true);
+    // Сразу уводим на экран генерации: POST может идти секунды (планировщик),
+    // спиннер на кнопке выглядит как зависание. Ошибка вернёт обратно на шаг 3.
+    setBatchCount(count >= 2 ? count : null);
+    setStep(3);
     try {
       if (count >= 2) {
         // Батч: планировщик подбирает N взаимно-различных вариаций. Они появятся
@@ -130,8 +138,9 @@ export function Wizard({ plan }: { plan: Plan }) {
         });
         setVideoId(v.id);
       }
-      setStep(3);
     } catch (e) {
+      setStep(2);
+      setBatchCount(null);
       if (e instanceof ApiError && e.isPaymentRequired) {
         toast.error('out of credits', 'taking you to billing');
         router.push('/app/billing');
@@ -168,6 +177,7 @@ export function Wizard({ plan }: { plan: Plan }) {
         {step === 2 && (
           <StepFormat
             generating={generating}
+            initial={lastPick}
             onBack={() => setStep(1)}
             onGenerate={handleGenerate}
           />
@@ -178,8 +188,10 @@ export function Wizard({ plan }: { plan: Plan }) {
             videoId={videoId}
             format={format}
             plan={plan}
+            batchCount={batchCount}
             onRetry={() => {
               setVideoId(null);
+              setBatchCount(null);
               setStep(2);
             }}
           />

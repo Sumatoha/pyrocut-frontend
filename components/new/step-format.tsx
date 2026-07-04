@@ -67,11 +67,20 @@ const PRESET_INFO: Record<
 /** Сколько вариаций за раз. 1 = точный одиночный пресет; 2-6 = батч с авто-разнообразием. */
 const COUNTS = [1, 2, 3, 4, 5, 6] as const;
 
+/** Последний выбор шага — чтобы возврат после ошибки не сбрасывал форму. */
+export interface FormatPick {
+  format: Format;
+  count: number;
+  preset: Preset;
+  prompt: string;
+}
+
 /** Шаг 3 — формат + кол-во вариаций (+ пресет для одиночной) + опц. бриф. */
 export function StepFormat({
   onBack,
   onGenerate,
   generating,
+  initial,
 }: {
   onBack: () => void;
   onGenerate: (
@@ -81,11 +90,12 @@ export function StepFormat({
     prompt: string,
   ) => void;
   generating: boolean;
+  initial?: FormatPick | null;
 }) {
-  const [format, setFormat] = useState<Format>('16:9');
-  const [count, setCount] = useState<number>(3);
-  const [preset, setPreset] = useState<Preset>('dolly');
-  const [prompt, setPrompt] = useState('');
+  const [format, setFormat] = useState<Format>(initial?.format ?? '16:9');
+  const [count, setCount] = useState<number>(initial?.count ?? 3);
+  const [preset, setPreset] = useState<Preset>(initial?.preset ?? 'dolly');
+  const [prompt, setPrompt] = useState(initial?.prompt ?? '');
 
   const single = count === 1;
 

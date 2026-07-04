@@ -55,6 +55,10 @@ export function VideoDetail({ id }: { id: string }) {
   const mp4Url = useSignedUrl(BUCKET_RENDERS, video?.mp4Path);
   const compositionUrl = useSignedUrl(BUCKET_COMPOSITIONS, video?.compositionPath);
   const thumbUrl = useSignedUrl(BUCKET_RENDERS, video?.thumbPath);
+  // Отдельная ссылка с ?download= → content-disposition: attachment (иначе Safari
+  // открывает mp4 в новой вкладке — <a download> для cross-origin игнорируется).
+  const downloadName = `pyrocut-${id.slice(0, 8)}.mp4`;
+  const downloadUrl = useSignedUrl(BUCKET_RENDERS, video?.mp4Path, downloadName);
 
   const [confirm, setConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -284,10 +288,10 @@ export function VideoDetail({ id }: { id: string }) {
               <Button variant="ghost" size="sm" onClick={copyShare}>
                 <Share2 className="size-4" /> share
               </Button>
-              {isReal(mp4Url) && (
+              {isReal(downloadUrl) && (
                 <a
-                  href={mp4Url ?? undefined}
-                  download
+                  href={downloadUrl ?? undefined}
+                  download={downloadName}
                   className="inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13px] text-white brand-grad"
                 >
                   <Download className="size-4" /> download mp4

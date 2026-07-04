@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import type { Format, Plan } from '@pyrocut/shared';
 import { cn } from '@/lib/cn';
 import { useVideo } from '@/lib/client/use-video';
+import { useElapsed } from '@/lib/client/use-elapsed';
 import { videoStatusMeta, videoProgress } from '@/lib/status';
 import { Scrubber } from '@/components/ui/scrubber';
 import { Button } from '@/components/ui/button';
@@ -21,16 +22,22 @@ const STAGE_COPY: Record<string, string> = {
   failed: 'render failed',
 };
 
-/** Шаг 4 — генерация + live-стадии. */
+/**
+ * Шаг 4 — генерация + live-стадии. Показывается СРАЗУ по клику generate
+ * (videoId ещё null, POST в полёте) — фаза «starting». batchCount ≥ 2 —
+ * батч: экран живёт, пока планировщик раскладывает вариации, потом /app.
+ */
 export function StepGenerate({
   videoId,
   format,
   plan,
+  batchCount,
   onRetry,
 }: {
   videoId: string | null;
   format: Format;
   plan: Plan;
+  batchCount?: number | null;
   onRetry: () => void;
 }) {
   const router = useRouter();
@@ -38,6 +45,26 @@ export function StepGenerate({
   const status = video?.status ?? 'queued';
   const meta = videoStatusMeta(status);
   const aspect = format === '9:16' ? 'aspect-[9/16] max-w-[300px]' : 'aspect-video';
+
+  const batch = (batchCount ?? 0) >= 2;
+  const starting = !batch && !videoId;
+
+  // Таймер живой с первого кадра: до появления видео тикаем от монтирования экрана.
+  const [mountedAt] = useState(() => new Date().toISOString());
+  const elapsed = useElapsed(
+    video?.createdAt ?? mountedAt,
+    status !== 'ready' && status !== 'failed',
+  );
+
+  const stageLabel = batch ? 'planning' : starting ? 'starting' : meta.label;
+  const heading = batch
+    ? `composing ${batchCount} variations`
+    : starting
+      ? 'starting — briefing the studio'
+      : STAGE_COPY[status];
+  const subline = batch
+    ? 'the director is picking mutually distinct cuts — you’ll land in your library where they render live.'
+    : 'you’ll jump to your video the moment it’s ready — no need to wait here.';
 
   useEffect(() => {
     if (status === 'ready' && videoId) {
@@ -65,22 +92,20 @@ export function StepGenerate({
     <div className="mx-auto max-w-[560px] py-6 text-center">
       <div
         className={cn(
-          'win-surface relative mx-auto overflow-hidden rounded-[var(--radius-card)] shadow-win',
+          'win-surface stage-in relative mx-auto overflow-hidden rounded-[var(--radius-card)] shadow-win',
           aspect,
         )}
         style={{ background: stageGradient(videoId ?? 'pending') }}
       >
-        <RenderStage label={meta.label} />
-        <RecTimer time="00:00:00" className="absolute left-4 top-4" />
+        <RenderStage label={stageLabel} />
+        <RecTimer time={elapsed} className="absolute left-4 top-4" />
         <div className="absolute inset-x-5 bottom-5">
-          <Scrubber value={videoProgress(status)} active onDark />
+          <Scrubber value={starting || batch ? 0.04 : videoProgress(status)} active onDark />
         </div>
       </div>
 
-      <h2 className="display mt-7 text-2xl text-ink">{STAGE_COPY[status]}</h2>
-      <p className="mt-2 text-sm text-muted">
-        you’ll jump to your video the moment it’s ready — no need to wait here.
-      </p>
+      <h2 className="display mt-7 text-2xl text-ink">{heading}</h2>
+      <p className="mt-2 text-sm text-muted">{subline}</p>
 
       {plan === 'free' && (
         <div className="mx-auto mt-6 max-w-[420px] rounded-[14px] border border-hair bg-wash px-4 py-3 text-[12px] text-ink2">

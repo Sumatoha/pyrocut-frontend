@@ -22,10 +22,14 @@ function isResolvedUrl(p: string): boolean {
 /**
  * Подписывает storage-путь → временный URL. null если клиента нет (degraded),
  * путь пустой или подписать не удалось (нет прав / объект ещё не готов).
+ * download: имя файла → Supabase отдаёт content-disposition: attachment.
+ * Без него <a download> на cross-origin URL игнорируется — Safari открывает
+ * плеер в новой вкладке вместо скачивания.
  */
 export async function signStoragePath(
   bucket: string,
   path: string | null | undefined,
+  download?: string,
 ): Promise<string | null> {
   if (!path) return null;
   if (isResolvedUrl(path)) return path;
@@ -33,7 +37,7 @@ export async function signStoragePath(
   if (!sb) return null;
   const { data, error } = await sb.storage
     .from(bucket)
-    .createSignedUrl(path, SIGNED_URL_TTL);
+    .createSignedUrl(path, SIGNED_URL_TTL, download ? { download } : undefined);
   if (error || !data) return null;
   return data.signedUrl;
 }
@@ -45,6 +49,7 @@ export async function signStoragePath(
 export function useSignedUrl(
   bucket: string,
   path: string | null | undefined,
+  download?: string,
 ): string | null {
   const [url, setUrl] = useState<string | null>(() =>
     path && isResolvedUrl(path) ? path : null,
@@ -61,13 +66,13 @@ export function useSignedUrl(
       return;
     }
     setUrl(null);
-    void signStoragePath(bucket, path).then((u) => {
+    void signStoragePath(bucket, path, download).then((u) => {
       if (!cancelled) setUrl(u);
     });
     return () => {
       cancelled = true;
     };
-  }, [bucket, path]);
+  }, [bucket, path, download]);
 
   return url;
 }
