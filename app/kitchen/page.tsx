@@ -12,8 +12,10 @@ import { Modal } from '@/components/ui/modal';
 import { Dropzone } from '@/components/ui/dropzone';
 import { useToast } from '@/components/ui/toast';
 import { RecTimer } from '@/components/motion/rec-timer';
+import { RenderStage } from '@/components/motion/render-stage';
 import { Wordmark } from '@/components/brand/logo';
 import { videoStatusMeta, videoProgress } from '@/lib/status';
+import { stageGradient } from '@/lib/thumb';
 import { VIDEO_STATUSES } from '@pyrocut/shared';
 
 function Section({
@@ -96,6 +98,27 @@ export default function KitchenPage() {
             ))}
           </div>
         </Card>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="microlabel">render stage (waiting state)</h2>
+        <div className="grid gap-4 sm:grid-cols-[1fr_180px]">
+          <div
+            className="win-surface relative aspect-video overflow-hidden rounded-[var(--radius-card)] shadow-win"
+            style={{ background: stageGradient('kitchen') }}
+          >
+            <RenderStage label="rendering" time="00:00:14" />
+            <div className="absolute inset-x-8 bottom-7">
+              <Scrubber value={0.8} active onDark />
+            </div>
+          </div>
+          <div
+            className="win-surface relative aspect-[9/16] overflow-hidden rounded-[var(--radius-card)] shadow-win"
+            style={{ background: stageGradient('kitchen-compact') }}
+          >
+            <RenderStage label="generating" compact />
+          </div>
+        </div>
       </section>
 
       <section className="space-y-4">

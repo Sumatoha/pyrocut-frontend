@@ -32,7 +32,6 @@ import { Modal } from '@/components/ui/modal';
 import { Scrubber } from '@/components/ui/scrubber';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useToast } from '@/components/ui/toast';
-import { RecTimer } from '@/components/motion/rec-timer';
 import { RenderStage } from '@/components/motion/render-stage';
 import { useElapsed } from '@/lib/client/use-elapsed';
 import { VideoThumb } from './video-thumb';
@@ -247,7 +246,7 @@ export function VideoDetail({ id }: { id: string }) {
             ) : (
               <>
                 {meta.active ? (
-                  <RenderStage label={meta.label} />
+                  <RenderStage label={meta.label} time={elapsed} />
                 ) : (
                   <div className="absolute inset-0 grid place-items-center">
                     {video.status === 'ready' ? (
@@ -262,12 +261,9 @@ export function VideoDetail({ id }: { id: string }) {
                   </div>
                 )}
                 {meta.active && (
-                  <>
-                    <RecTimer time={elapsed} className="absolute left-4 top-4" />
-                    <div className="absolute inset-x-5 bottom-5">
-                      <Scrubber value={videoProgress(video.status)} active onDark />
-                    </div>
-                  </>
+                  <div className="absolute inset-x-8 bottom-7">
+                    <Scrubber value={videoProgress(video.status)} active onDark />
+                  </div>
                 )}
               </>
             )}

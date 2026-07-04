@@ -10,7 +10,6 @@ import { useElapsed } from '@/lib/client/use-elapsed';
 import { videoStatusMeta, videoProgress } from '@/lib/status';
 import { Scrubber } from '@/components/ui/scrubber';
 import { Button } from '@/components/ui/button';
-import { RecTimer } from '@/components/motion/rec-timer';
 import { RenderStage } from '@/components/motion/render-stage';
 import { stageGradient } from '@/lib/thumb';
 
@@ -97,9 +96,8 @@ export function StepGenerate({
         )}
         style={{ background: stageGradient(videoId ?? 'pending') }}
       >
-        <RenderStage label={stageLabel} />
-        <RecTimer time={elapsed} className="absolute left-4 top-4" />
-        <div className="absolute inset-x-5 bottom-5">
+        <RenderStage label={stageLabel} time={elapsed} />
+        <div className="absolute inset-x-8 bottom-7">
           <Scrubber value={starting || batch ? 0.04 : videoProgress(status)} active onDark />
         </div>
       </div>
