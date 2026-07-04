@@ -1083,6 +1083,7 @@ hr.rule {
     }
     .sr-track {
       display: flex;
+      align-items: center;
       gap: clamp(20px, 2.4vw, 36px);
       width: max-content;
       padding: 0 calc(50vw - min(23vw, 330px));
@@ -1091,7 +1092,7 @@ hr.rule {
       z-index: 2;
     }
     .reel {
-      width: clamp(380px, 46vw, 660px);
+      width: fit-content;
       flex-shrink: 0;
       background: var(--noir-2);
       border: 1px solid rgba(255,255,255,0.1);
@@ -1119,10 +1120,26 @@ hr.rule {
       font-size: 10px; letter-spacing: 0.12em; color: var(--heat);
     }
     .reel-rec::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--heat); animation: rec 1.3s ease-in-out infinite; }
+    /* horizontal (16:9) and vertical (9:16) stages share one strip height rhythm:
+       vertical cards run taller — like a phone standing next to a monitor */
     .reel-stage {
+      height: clamp(280px, 42vh, 400px);
       aspect-ratio: 16/9;
       position: relative;
       overflow: hidden;
+    }
+    .reel-v .reel-stage {
+      height: clamp(380px, 58vh, 540px);
+      aspect-ratio: 9/16;
+    }
+    .reel-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: var(--noir-2);
     }
     .reel-scrub {
       position: absolute; left: 16px; right: 16px; bottom: 13px; z-index: 5;
@@ -1144,130 +1161,6 @@ hr.rule {
     }
     .reel-tag b { color: #fff; font-size: 13px; font-weight: 700; letter-spacing: -0.01em; text-shadow: 0 4px 18px rgba(0,0,0,0.6); }
     .reel-tag span { color: rgba(255,255,255,0.55); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-
-    /* 01 lumen — violet dusk + pulsing dashboard */
-    .rs-lumen {
-      background:
-        radial-gradient(110% 80% at 20% 0%, #2A1F4F 0%, transparent 60%),
-        radial-gradient(120% 90% at 95% 100%, #45215C 0%, transparent 60%),
-        linear-gradient(180deg, #1A1230, #0E0B1F);
-    }
-    .rs-card {
-      position: absolute; top: 56%; left: 50%;
-      width: 58%; transform: translate(-50%, -50%);
-      background: #fff; border-radius: 10px; padding: 12px;
-      display: grid; grid-template-columns: 64px 1fr; gap: 10px;
-      box-shadow: 0 34px 70px -26px rgba(0,0,0,0.75);
-      animation: rs-push 5.5s ease-in-out infinite;
-    }
-    @keyframes rs-push { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.13); } }
-    .rs-side { background: #F5F3FC; border-radius: 6px; padding: 7px; display: flex; flex-direction: column; gap: 5px; }
-    .rs-side i { height: 6px; border-radius: 2px; background: #E4DFF4; }
-    .rs-side i.on { background: var(--violet); width: 75%; }
-    .rs-main { display: flex; flex-direction: column; gap: 7px; }
-    .rs-h { height: 9px; width: 58%; border-radius: 2px; background: #19132E; }
-    .rs-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
-    .rs-stats span { background: #F5F2FC; border-radius: 5px; padding: 6px 7px; }
-    .rs-stats b { display: block; font-family: var(--sans); font-size: 12px; font-weight: 700; color: #160F30; letter-spacing: -0.02em; }
-    .rs-stats i { font-size: 6.5px; font-style: normal; color: #948CAE; letter-spacing: 0.08em; }
-    .rs-chart { height: 34px; background: #F8F6FE; border-radius: 5px; width: 100%; }
-
-    /* 02 shiplog — terminal typing */
-    .rs-ship { background: linear-gradient(180deg, #071710 0%, #04110B 100%); }
-    .rs-term {
-      position: absolute; left: 7%; top: 16%;
-      font-family: var(--mono); font-size: clamp(11px, 1.15vw, 15px); color: #45E08A;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .rs-term p { margin: 0; overflow: hidden; white-space: nowrap; width: 0; }
-    .rs-term .tr1 { animation: rs-type 7s steps(24) infinite; }
-    .rs-term .tr2 { animation: rs-type 7s steps(18) 1.2s infinite backwards; color: rgba(69,224,138,0.75); }
-    .rs-term .tr3 { animation: rs-type 7s steps(20) 2.1s infinite backwards; color: rgba(69,224,138,0.75); }
-    .rs-term .tr4 { animation: rs-type 7s steps(16) 3s infinite backwards; color: #9FF5C4; }
-    @keyframes rs-type { 0% { width: 0; } 38%, 92% { width: 100%; } 100% { width: 100%; opacity: 0; } }
-    .tcaret { display: inline-block; width: 7px; height: 0.95em; margin-left: 4px; background: #45E08A; vertical-align: text-bottom; animation: caret-blink 1.1s steps(1) infinite; }
-
-    /* 03 pulse — snapcut beats */
-    .rs-pulse { background: #14090E; }
-    .rs-beat {
-      position: absolute; inset: 0;
-      display: grid; place-items: center;
-      opacity: 0;
-      animation: rs-snap 2.7s steps(1) infinite;
-    }
-    .rs-beat span {
-      font-family: var(--mono); font-weight: 700; color: #fff;
-      font-size: clamp(30px, 3.6vw, 52px); letter-spacing: -0.04em;
-    }
-    .rs-beat.b1 { background: radial-gradient(70% 70% at 35% 35%, #FF6A2C 0%, #2A0F14 75%); }
-    .rs-beat.b2 { background: radial-gradient(70% 70% at 65% 55%, #6D4AFF 0%, #110B2A 75%); animation-delay: 0.9s; }
-    .rs-beat.b3 { background: radial-gradient(70% 70% at 50% 70%, #E2405F 0%, #1D0A14 75%); animation-delay: 1.8s; }
-    @keyframes rs-snap { 0%, 32% { opacity: 1; } 33%, 100% { opacity: 0; } }
-
-    /* 04 atlas — editorial calm */
-    .rs-atlas {
-      background:
-        radial-gradient(100% 80% at 80% 10%, #2B3A5E 0%, transparent 60%),
-        linear-gradient(180deg, #1A2238, #0D1120);
-    }
-    .rs-ed {
-      position: absolute; inset: 0;
-      display: grid; place-content: center; justify-items: center; gap: 18px;
-    }
-    .rs-ed em {
-      font-family: var(--mono); font-style: normal; font-weight: 400;
-      color: #E9EFF8; font-size: clamp(20px, 2.2vw, 30px); letter-spacing: 0.04em;
-      animation: rs-fade 6s ease-in-out infinite;
-    }
-    .rs-ed .ln {
-      width: 120px; height: 1px; background: rgba(233,239,248,0.5);
-      transform: scaleX(0); animation: rs-line 6s ease-in-out infinite;
-    }
-    .rs-ed .ln2 { animation-delay: 0.25s; }
-    @keyframes rs-line { 0% { transform: scaleX(0); } 30%, 78% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
-    @keyframes rs-fade { 0% { opacity: 0; } 26%, 80% { opacity: 1; } 100% { opacity: 0; } }
-
-    /* 05 quill — kinetic words */
-    .rs-quill { background: linear-gradient(135deg, #241A52 0%, #0C0822 100%); }
-    .rs-kin { position: absolute; inset: 0; }
-    .rs-kin .w {
-      position: absolute; inset: 0;
-      display: grid; place-items: center;
-      font-family: var(--mono); font-weight: 700; color: #fff;
-      font-size: clamp(34px, 4vw, 58px); letter-spacing: -0.05em;
-      opacity: 0;
-      animation: rs-word 4.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-    }
-    .rs-kin .w2 { animation-delay: 1.4s; }
-    .rs-kin .w3 { animation-delay: 2.8s; color: var(--violet2); }
-    @keyframes rs-word {
-      0% { opacity: 0; transform: translateY(26px) scale(0.96); }
-      8%, 28% { opacity: 1; transform: translateY(0) scale(1); }
-      36%, 100% { opacity: 0; transform: translateY(-22px) scale(1.02); }
-    }
-
-    /* 06 brew — warm product push */
-    .rs-brew {
-      background:
-        radial-gradient(100% 90% at 20% 100%, #4A2A12 0%, transparent 60%),
-        linear-gradient(180deg, #241407, #140B04);
-    }
-    .rs-prod {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -52%);
-      width: 52%;
-      background: #FFF8EE; border-radius: 12px;
-      padding: 18px 20px 16px;
-      display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
-      box-shadow: 0 34px 70px -24px rgba(0,0,0,0.8);
-      animation: rs-push 6.5s ease-in-out -1s infinite;
-    }
-    .rs-prod .cup {
-      width: 34px; height: 34px; border-radius: 10px;
-      background: linear-gradient(140deg, #FFB65C, #E2662A);
-    }
-    .rs-prod b { font-family: var(--sans); font-weight: 700; color: #23130A; font-size: clamp(13px, 1.3vw, 18px); letter-spacing: -0.02em; }
-    .rs-prod .price { font-family: var(--mono); font-size: 11px; color: #A3703F; }
 
     /* progress — ember playhead under the strip */
     .sr-progress {
@@ -1307,62 +1200,12 @@ hr.rule {
         scrollbar-width: none;
       }
       .sr-track::-webkit-scrollbar { display: none; }
-      .reel { width: 82vw; scroll-snap-align: center; }
+      .reel { scroll-snap-align: center; }
+      .reel-stage { height: auto; width: 78vw; }
+      .reel-v .reel-stage { width: 44vw; }
       .sr-progress { display: none; }
       .sr-head { margin-bottom: 28px; }
     }
-
-    /* ---------- the five looks — a filmstrip of directed styles ---------- */
-    .looks { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
-    @media (max-width: 1080px) { .looks { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 640px) { .looks { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 440px) { .looks { grid-template-columns: 1fr; } }
-    .look {
-      position: relative; aspect-ratio: 4/5; border-radius: var(--r-lg); overflow: hidden;
-      background: var(--noir); border: 1px solid rgba(255,255,255,0.08);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
-      cursor: pointer;
-    }
-    .look:hover { transform: translateY(-6px) scale(1.015); box-shadow: var(--shadow-lift), 0 0 0 1px rgba(109,74,255,0.25); }
-    .lk-canvas { position: absolute; inset: 0; overflow: hidden; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-    .look:hover .lk-canvas { transform: scale(1.06); }
-    .look::after { content: ""; position: absolute; inset: 0; z-index: 2; background: linear-gradient(180deg, transparent 42%, rgba(8,5,18,0.86) 100%); pointer-events: none; }
-    .lk-info { position: absolute; left: 14px; right: 14px; bottom: 13px; z-index: 3; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
-    .lk-nm { color: #fff; font-family: var(--mono); font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
-    .lk-ds { color: rgba(255,255,255,0.62); font-size: 10.5px; margin-top: 4px; line-height: 1.4; }
-    .lk-sec { font-family: var(--mono); font-size: 10px; color: var(--ember); font-weight: 600; flex-shrink: 0; }
-    .lk-bg { position: absolute; inset: 0; }
-    /* REC chip appears on hover — "this one is rolling" */
-    .lk-rec {
-      position: absolute; top: 12px; right: 12px; z-index: 3;
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; color: var(--heat);
-      background: rgba(10,7,20,0.65); backdrop-filter: blur(8px);
-      padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
-      opacity: 0; transform: translateY(-4px);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
-    .lk-rec::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--heat); animation: rec 1.3s ease-in-out infinite; }
-    .look:hover .lk-rec { opacity: 1; transform: none; }
-
-    .lk-dolly { background: radial-gradient(70% 60% at 50% 35%, #3a2a7a, #100b26); }
-    .lk-dolly .sq { position: absolute; inset: 26% 24%; border-radius: 9px; background: #fff; opacity: .92; animation: lkpush 3.6s ease-in-out infinite; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6); }
-    @keyframes lkpush { 50% { transform: scale(1.24); } }
-    .lk-snap { background: #120b26; }
-    .lk-snap .b { position: absolute; inset: 0; animation: lksnap 1.6s steps(1) infinite; }
-    .lk-snap .b:nth-child(1){ background: radial-gradient(60% 60% at 40% 40%, var(--heat), #2a0f14); }
-    .lk-snap .b:nth-child(2){ background: radial-gradient(60% 60% at 60% 60%, var(--violet), #110b2a); animation-delay: .8s; }
-    @keyframes lksnap { 0%,49%{opacity:1;} 50%,100%{opacity:0;} }
-    .lk-edit { background: linear-gradient(180deg, #1a1338, #0c0820); }
-    .lk-edit .ln { position: absolute; left: 18%; right: 18%; top: 46%; height: 2px; background: rgba(255,255,255,0.55); transform: scaleX(0); transform-origin: left; animation: lkrev 4s ease-in-out infinite; }
-    @keyframes lkrev { 0%{transform:scaleX(0);} 45%,70%{transform:scaleX(1);} 100%{transform:scaleX(0); transform-origin:right;} }
-    .lk-kin { background: linear-gradient(135deg, #241a52, #0c0822); display: grid; place-items: center; }
-    .lk-kin .t { font-family: var(--mono); font-weight: 700; color: #fff; font-size: 24px; letter-spacing: -0.04em; animation: lkkin 2.6s ease-in-out infinite; }
-    @keyframes lkkin { 0%,100%{ transform: translateY(7px); opacity:.4;} 50%{ transform: none; opacity:1;} }
-    .lk-term { background: #06120c; }
-    .lk-term .c { position: absolute; left: 14px; top: 16px; right: 14px; color: #45e08a; font-family: var(--mono); font-size: 11px; }
-    .lk-term .c .row { overflow: hidden; white-space: nowrap; animation: lktype 4s steps(16) infinite; }
-    @keyframes lktype { 0%{ width: 0; } 55%,100%{ width: 100%; } }
 
     /* ---------- detail polish ---------- */
     /* eyebrow с боковыми линиями */
@@ -1463,13 +1306,6 @@ hr.rule {
 
     @media (prefers-reduced-motion: reduce) {
       .rv { opacity: 1 !important; transform: none !important; }
-      .lk-bg [class] { animation: none !important; }
-      /* showreel: живём статичным кадром */
-      .reel-stage [class] { animation: none !important; }
-      .rs-beat.b1, .rs-kin .w1 { opacity: 1 !important; }
-      .rs-term p { width: 100% !important; }
-      .rs-ed em { opacity: 1 !important; }
-      .rs-ed .ln { transform: scaleX(1) !important; }
       .faq .answer { animation: none; }
       .grain, .hero-aura i, .strip-track, .cta-band::before,
       .price.popular::before, .url-halo::before, .hero h1 .v { animation: none !important; }
@@ -1490,8 +1326,8 @@ hr.rule {
   <div class="container nav-inner">
     <a href="/" class="brand" aria-label="pyrocut home">pyrocut<span class="brand-caret" aria-hidden="true"></span></a>
     <div class="nav-links">
+      <a href="#showreel">Showreel</a>
       <a href="#how">How it works</a>
-      <a href="#looks">Looks</a>
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
     </div>
@@ -1534,11 +1370,11 @@ hr.rule {
       </div>
     </div>
 
-    <a href="#looks" class="hero-watch fade-up fade-d3">
+    <a href="#showreel" class="hero-watch fade-up fade-d3">
       <span class="play-btn">
         <svg width="9" height="9" viewBox="0 0 9 9"><path d="M2 1 L8 4.5 L2 8 Z" fill="white"/></svg>
       </span>
-      see the five looks
+      watch the showreel
     </a>
 
     <div class="hero-meta fade-up fade-d4">
@@ -1560,125 +1396,92 @@ hr.rule {
     <div class="sr-head">
       <span class="eyebrow">Showcase</span>
       <h2 class="h-section">cut in pyrocut.</h2>
-      <p class="sr-sub">six reels, six brands — every one from a pasted url. keep scrolling.</p>
+      <p class="sr-sub">six real renders, five looks, two formats — every one from a pasted url. keep scrolling.</p>
     </div>
 
     <div class="sr-track" id="srTrack">
 
-      <!-- 01 · lumen — dolly -->
+      <!-- 01 · dolly — 16:9 -->
       <article class="reel">
         <div class="reel-bar">
           <span class="reel-dot" style="background:#6D4AFF"></span>
-          <span class="reel-name">lumen-launch.mp4</span>
+          <span class="reel-name">dolly-169.mp4</span>
           <span class="reel-rec">REC</span>
         </div>
-        <div class="reel-stage rs-lumen">
-          <div class="rs-card">
-            <div class="rs-side"><i class="on"></i><i></i><i></i></div>
-            <div class="rs-main">
-              <b class="rs-h"></b>
-              <div class="rs-stats">
-                <span><b>$4.2k</b><i>MRR</i></span>
-                <span><b>128</b><i>TRIALS</i></span>
-                <span><b>+38%</b><i>WOW</i></span>
-              </div>
-              <svg class="rs-chart" viewBox="0 0 200 44" preserveAspectRatio="none">
-                <path d="M0 38 L28 34 L56 36 L84 24 L112 27 L140 15 L170 18 L200 5 L200 44 L0 44 Z" fill="rgba(109,74,255,0.18)"/>
-                <path d="M0 38 L28 34 L56 36 L84 24 L112 27 L140 15 L170 18 L200 5" fill="none" stroke="#6D4AFF" stroke-width="2"/>
-              </svg>
-            </div>
-          </div>
-          <div class="reel-scrub"><span>0:07</span><div class="rt"><div class="rf" style="width:34%"></div></div><span>0:24</span></div>
-          <div class="reel-tag"><b>lumen.finance</b><span>dolly · 24s</span></div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/dolly-169.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>dolly</b><span>16:9 · launch teaser</span></div>
         </div>
       </article>
 
-      <!-- 02 · shiplog — terminal -->
+      <!-- 02 · snapcut — 9:16 -->
+      <article class="reel reel-v">
+        <div class="reel-bar">
+          <span class="reel-dot" style="background:#FF6A2C"></span>
+          <span class="reel-name">snapcut-916.mp4</span>
+          <span class="reel-rec">REC</span>
+        </div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/snapcut-916.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>snapcut</b><span>9:16 · social reel</span></div>
+        </div>
+      </article>
+
+      <!-- 03 · terminal — 16:9 -->
       <article class="reel">
         <div class="reel-bar">
           <span class="reel-dot" style="background:#45E08A"></span>
-          <span class="reel-name">shiplog-reel.mp4</span>
+          <span class="reel-name">terminal-169.mp4</span>
           <span class="reel-rec">REC</span>
         </div>
-        <div class="reel-stage rs-ship">
-          <div class="rs-term">
-            <p class="tr tr1">$ shiplog deploy --prod</p>
-            <p class="tr tr2">✓ build 142 · 3.8s</p>
-            <p class="tr tr3">✓ 12,408 events / day</p>
-            <p class="tr tr4">▮ uptime 99.98%<span class="tcaret"></span></p>
-          </div>
-          <div class="reel-scrub"><span>0:04</span><div class="rt"><div class="rf" style="width:22%"></div></div><span>0:20</span></div>
-          <div class="reel-tag"><b>shiplog.dev</b><span>terminal · 20s</span></div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/terminal-169.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>terminal</b><span>16:9 · feature drop</span></div>
         </div>
       </article>
 
-      <!-- 03 · pulse — snapcut -->
-      <article class="reel">
+      <!-- 04 · kinetic — 9:16 -->
+      <article class="reel reel-v">
         <div class="reel-bar">
-          <span class="reel-dot" style="background:#FF6A2C"></span>
-          <span class="reel-name">pulse-social.mp4</span>
+          <span class="reel-dot" style="background:#9A6BFF"></span>
+          <span class="reel-name">kinetic-916.mp4</span>
           <span class="reel-rec">REC</span>
         </div>
-        <div class="reel-stage rs-pulse">
-          <div class="rs-beat b1"><span>run.</span></div>
-          <div class="rs-beat b2"><span>lift.</span></div>
-          <div class="rs-beat b3"><span>repeat.</span></div>
-          <div class="reel-scrub"><span>0:09</span><div class="rt"><div class="rf" style="width:56%"></div></div><span>0:16</span></div>
-          <div class="reel-tag"><b>pulse.fit</b><span>snapcut · 16s</span></div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/kinetic-916.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>kinetic</b><span>9:16 · copy first</span></div>
         </div>
       </article>
 
-      <!-- 04 · atlas — editorial -->
+      <!-- 05 · editorial — 16:9 -->
       <article class="reel">
         <div class="reel-bar">
           <span class="reel-dot" style="background:#BFE2F5"></span>
-          <span class="reel-name">atlas-story.mp4</span>
+          <span class="reel-name">editorial-169.mp4</span>
           <span class="reel-rec">REC</span>
         </div>
-        <div class="reel-stage rs-atlas">
-          <div class="rs-ed">
-            <i class="ln"></i>
-            <em>wander further.</em>
-            <i class="ln ln2"></i>
-          </div>
-          <div class="reel-scrub"><span>0:15</span><div class="rt"><div class="rf" style="width:54%"></div></div><span>0:28</span></div>
-          <div class="reel-tag"><b>atlas.travel</b><span>editorial · 28s</span></div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/editorial-169.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>editorial</b><span>16:9 · brand story</span></div>
         </div>
       </article>
 
-      <!-- 05 · quill — kinetic -->
-      <article class="reel">
-        <div class="reel-bar">
-          <span class="reel-dot" style="background:#9A6BFF"></span>
-          <span class="reel-name">quill-launch.mp4</span>
-          <span class="reel-rec">REC</span>
-        </div>
-        <div class="reel-stage rs-quill">
-          <div class="rs-kin">
-            <span class="w w1">write.</span>
-            <span class="w w2">edit.</span>
-            <span class="w w3">ship.</span>
-          </div>
-          <div class="reel-scrub"><span>0:06</span><div class="rt"><div class="rf" style="width:33%"></div></div><span>0:18</span></div>
-          <div class="reel-tag"><b>quill.ai</b><span>kinetic · 18s</span></div>
-        </div>
-      </article>
-
-      <!-- 06 · brew — dolly -->
-      <article class="reel">
+      <!-- 06 · dolly — 9:16 -->
+      <article class="reel reel-v">
         <div class="reel-bar">
           <span class="reel-dot" style="background:#FFE49A"></span>
-          <span class="reel-name">brew-drop.mp4</span>
+          <span class="reel-name">dolly-916.mp4</span>
           <span class="reel-rec">REC</span>
         </div>
-        <div class="reel-stage rs-brew">
-          <div class="rs-prod">
-            <i class="cup"></i>
-            <b>single origin, delivered.</b>
-            <span class="price">$18 / bag</span>
-          </div>
-          <div class="reel-scrub"><span>0:11</span><div class="rt"><div class="rf" style="width:50%"></div></div><span>0:22</span></div>
-          <div class="reel-tag"><b>brew.shop</b><span>dolly · 22s</span></div>
+        <div class="reel-stage">
+          <video class="reel-video" src="/videos/dolly-916.mp4" muted loop playsinline preload="metadata"></video>
+          <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
+          <div class="reel-tag"><b>dolly</b><span>9:16 · product push</span></div>
         </div>
       </article>
 
@@ -1956,45 +1759,6 @@ hr.rule {
   </div>
 </section>
 
-<!-- =========================== LOOKS =========================== -->
-<section class="section" id="looks">
-  <div class="container">
-    <div class="section-head rv">
-      <span class="eyebrow">Five directed looks</span>
-      <h2 class="h-section">one paste,<br/><span style="color: var(--muted)">never one template.</span></h2>
-      <p class="sub">each look is a different rhythm and energy — calm dolly, hard beat-cuts, quiet editorial. the colors and mood come from <em>your</em> page, so two reels never feel the same.</p>
-    </div>
-
-    <div class="looks rv">
-      <div class="look" onclick="location.href='/login'">
-        <div class="lk-canvas"><div class="lk-bg lk-dolly"><div class="sq"></div></div></div>
-        <span class="lk-rec">REC</span>
-        <div class="lk-info"><div><div class="lk-nm">dolly</div><div class="lk-ds">cinematic push-in on the dashboard</div></div><span class="lk-sec">24s</span></div>
-      </div>
-      <div class="look" onclick="location.href='/login'">
-        <div class="lk-canvas"><div class="lk-bg lk-snap"><div class="b"></div><div class="b"></div></div></div>
-        <span class="lk-rec">REC</span>
-        <div class="lk-info"><div><div class="lk-nm">snapcut</div><div class="lk-ds">hard beat-cuts, fast crops</div></div><span class="lk-sec">16s</span></div>
-      </div>
-      <div class="look" onclick="location.href='/login'">
-        <div class="lk-canvas"><div class="lk-bg lk-edit"><div class="ln"></div></div></div>
-        <span class="lk-rec">REC</span>
-        <div class="lk-info"><div><div class="lk-nm">editorial</div><div class="lk-ds">air, long holds, one reveal</div></div><span class="lk-sec">28s</span></div>
-      </div>
-      <div class="look" onclick="location.href='/login'">
-        <div class="lk-canvas"><div class="lk-bg lk-kin"><div class="t">ship.</div></div></div>
-        <span class="lk-rec">REC</span>
-        <div class="lk-info"><div><div class="lk-nm">kinetic</div><div class="lk-ds">typography-led, copy first</div></div><span class="lk-sec">18s</span></div>
-      </div>
-      <div class="look" onclick="location.href='/login'">
-        <div class="lk-canvas"><div class="lk-bg lk-term"><div class="c"><div class="row">$ pyrocut --ship</div></div></div></div>
-        <span class="lk-rec">REC</span>
-        <div class="lk-info"><div><div class="lk-nm">terminal</div><div class="lk-ds">live counters on your metrics</div></div><span class="lk-sec">20s</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- =========================== PRICING =========================== -->
 <section class="section" id="pricing" style="background: var(--bg-soft);">
   <div class="container">
@@ -2110,7 +1874,7 @@ hr.rule {
       <p class="sub" style="margin-top: 18px;">free to try, no card. your first launch reel is one paste away.</p>
       <div class="hero-cta">
         <a href="/login" class="btn btn-primary btn-lg">start free →</a>
-        <a href="#looks" class="btn btn-light btn-lg">see the looks →</a>
+        <a href="#showreel" class="btn btn-light btn-lg">watch the showreel →</a>
       </div>
     </div>
   </div>
@@ -2127,8 +1891,8 @@ hr.rule {
       <div>
         <h4>Product</h4>
         <ul>
+          <li><a href="#showreel">Showreel</a></li>
           <li><a href="#how">How it works</a></li>
-          <li><a href="#looks">Looks</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#pricing">Pricing</a></li>
         </ul>
@@ -2240,6 +2004,32 @@ hr.rule {
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     update();
+  })();
+
+  // showreel videos — play only when on screen, live ember scrubber
+  (function () {
+    const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    document.querySelectorAll('.reel-stage').forEach((stage) => {
+      const video = stage.querySelector('.reel-video');
+      if (!video) return;
+      const fill = stage.querySelector('.rf');
+      const cur = stage.querySelector('.rc-cur');
+      const dur = stage.querySelector('.rc-dur');
+      const setDur = () => { if (dur && video.duration) dur.textContent = fmt(video.duration); };
+      if (video.readyState >= 1) setDur(); else video.addEventListener('loadedmetadata', setDur);
+      video.addEventListener('timeupdate', () => {
+        if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration * 100).toFixed(1)}%`;
+        if (cur) cur.textContent = fmt(video.currentTime);
+      });
+    });
+    if (reduce) return; // reduced motion: постер-кадр, без автоплея
+    const vio = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        const v = e.target;
+        if (e.isIntersecting) { v.play().catch(() => {}); } else { v.pause(); }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reel-video').forEach((v) => vio.observe(v));
   })();
 </script>
 
