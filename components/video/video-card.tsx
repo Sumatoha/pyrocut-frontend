@@ -67,9 +67,10 @@ export function VideoCard({
 
   return (
     <>
+      {/* каскад короткий: хвост грида не должен ждать >200мс до появления */}
       <div
         className="rise-in"
-        style={{ animationDelay: `${Math.min(index, 11) * 55}ms` }}
+        style={{ animationDelay: `${Math.min(index, 7) * 30}ms` }}
       >
       <Card className="lift group relative overflow-hidden border-hair p-2.5 hover:-translate-y-1 hover:border-hair-strong hover:shadow-float">
         {/* ember click-ring акцент на hover */}

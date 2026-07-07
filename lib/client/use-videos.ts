@@ -110,7 +110,8 @@ export function useVideos(): VideosState {
   );
   useEffect(() => {
     if (DEMO_MODE || !hasActive) return;
-    const id = setInterval(() => void reload(), 5000);
+    // Основной канал — realtime; поллинг лишь страховка, 10с не грузит API.
+    const id = setInterval(() => void reload(), 10_000);
     return () => clearInterval(id);
   }, [hasActive, reload]);
 

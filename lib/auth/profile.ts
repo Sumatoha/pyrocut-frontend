@@ -10,32 +10,34 @@ export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
   if (!supabase) return null;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  // sub/email из локально валидированного JWT (getClaims) — без сетевого getUser:
+  // middleware уже рефрешнул сессию, здесь клеймов достаточно.
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (!claims) return null;
+  const email = typeof claims.email === 'string' ? claims.email : undefined;
 
-  const { data } = await supabase
+  const { data: row } = await supabase
     .from('profiles')
     .select('id, plan, credits, created_at')
-    .eq('id', user.id)
+    .eq('id', claims.sub)
     .maybeSingle();
 
-  if (data) {
+  if (row) {
     return {
-      id: data.id as string,
-      plan: data.plan as Profile['plan'],
-      credits: data.credits as number,
-      createdAt: data.created_at as string,
-      email: user.email ?? undefined,
+      id: row.id as string,
+      plan: row.plan as Profile['plan'],
+      credits: row.credits as number,
+      createdAt: row.created_at as string,
+      email,
     };
   }
 
   return {
-    id: user.id,
+    id: claims.sub,
     plan: 'free',
     credits: 0,
     createdAt: new Date().toISOString(),
-    email: user.email ?? undefined,
+    email,
   };
 }

@@ -100,7 +100,8 @@ export function useVideo(id: string | null): {
   }, [id]);
 
   // Safety-net поллинг, пока видео не завершилось (realtime может пропасть при
-  // reconnect/refresh токена). Останавливается на ready/failed.
+  // reconnect/refresh токена). Останавливается на ready/failed. Основной канал —
+  // realtime, поэтому интервал щадящий: 10с не грузит API во время рендера.
   const active = !!video && video.status !== 'ready' && video.status !== 'failed';
   useEffect(() => {
     if (DEMO_MODE || !id || !active) return;
@@ -109,7 +110,7 @@ export function useVideo(id: string | null): {
         .getVideo(id)
         .then((v) => setVideo(v))
         .catch(() => {});
-    }, 5000);
+    }, 10_000);
     return () => clearInterval(t);
   }, [id, active]);
 

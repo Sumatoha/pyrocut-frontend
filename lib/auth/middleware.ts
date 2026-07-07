@@ -1,16 +1,15 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import type { User } from '@supabase/supabase-js';
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
 /**
  * Рефреш сессии в middleware (обязателен для @supabase/ssr).
- * Возвращает обновлённый response, текущего user и флаг configured.
+ * Возвращает обновлённый response, claims текущего юзера и флаг configured.
  */
 export async function updateSession(request: NextRequest): Promise<{
   response: NextResponse;
-  user: User | null;
+  user: { sub: string } | null;
   configured: boolean;
 }> {
   let response = NextResponse.next({ request });
@@ -34,9 +33,10 @@ export async function updateSession(request: NextRequest): Promise<{
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims вместо getUser: JWT валидируется ЛОКАЛЬНО (JWKS кэшируется), сеть —
+  // только на рефреш протухшего токена. getUser ходил в Supabase Auth на КАЖДУЮ
+  // навигацию/RSC-запрос залогиненного юзера (+150-400мс на любой переход).
+  const { data } = await supabase.auth.getClaims();
 
-  return { response, user, configured: true };
+  return { response, user: data?.claims ?? null, configured: true };
 }

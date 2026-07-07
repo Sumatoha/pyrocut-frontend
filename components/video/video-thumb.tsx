@@ -45,6 +45,8 @@ export function VideoThumb({
         <img
           src={thumbUrl}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 size-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out-expo)] group-hover:scale-[1.06]"
         />
       )}
