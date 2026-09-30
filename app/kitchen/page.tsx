@@ -13,6 +13,7 @@ import { Dropzone } from '@/components/ui/dropzone';
 import { useToast } from '@/components/ui/toast';
 import { RecTimer } from '@/components/motion/rec-timer';
 import { RenderStage } from '@/components/motion/render-stage';
+import { BrandScan } from '@/components/new/brand-scan';
 import { Wordmark } from '@/components/brand/logo';
 import { videoStatusMeta, videoProgress } from '@/lib/status';
 import { stageGradient } from '@/lib/thumb';
@@ -44,6 +45,25 @@ export default function KitchenPage() {
         <Wordmark size={30} />
         <Chip tone="ember">/_kitchen</Chip>
       </header>
+
+      <section className="space-y-4">
+        <h2 className="microlabel">brand scan (wizard waiting state)</h2>
+        <div className="grid gap-8 lg:grid-cols-2">
+          <BrandScan
+            url="https://pyrocut.com"
+            status="scraping"
+            screenshotUrl={null}
+            onBack={() => toast.success('back')}
+          />
+          <BrandScan
+            url="https://pyrocut.com"
+            status="scraping"
+            screenshotUrl="/videos/dolly-169.jpg"
+            startedAt={new Date(Date.now() - 40_000).toISOString()}
+            onBack={() => toast.success('back')}
+          />
+        </div>
+      </section>
 
       <Section title="buttons">
         <Button>primary</Button>
@@ -120,6 +140,7 @@ export default function KitchenPage() {
           </div>
         </div>
       </section>
+
 
       <section className="space-y-4">
         <h2 className="microlabel">cards</h2>

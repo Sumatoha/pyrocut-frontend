@@ -146,6 +146,8 @@ export interface Visual {
   label: string;
   bbox: BBox | null;
   cropPath: string | null;
+  /** Signed URL кропа (1ч). Только в ответах GET/PATCH /projects/:id, не в realtime-строках. */
+  cropUrl?: string | null;
   hero: boolean;
 }
 
@@ -200,6 +202,11 @@ export interface Brand {
   h2: string | null;
   cta: string | null;
   screenshotPath: string | null;
+  /**
+   * Signed URL скрина (1ч), подписан на сервере. Только в ответах GET/PATCH
+   * /projects/:id — realtime-строки его не несут (use-project перечитывает API).
+   */
+  screenshotUrl?: string | null;
   /** Полностраничный скрин (для vision-генерации). Может отличаться от hero-скрина. */
   fullPagePath: string | null;
   /** Структурный vision-brief; null если анализ не удался. */

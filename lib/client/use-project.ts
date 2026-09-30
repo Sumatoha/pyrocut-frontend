@@ -53,12 +53,32 @@ export function useProject(id: string | null): {
     }
 
     let cancelled = false;
-    api
-      .getProject(id)
-      .then((p) => !cancelled && setProject(p))
-      .catch(
-        (e) => !cancelled && setError(e?.message ?? 'could not load project'),
-      );
+
+    // Один refetch в полёте + флаг «пришло ещё событие»: API всегда отдаёт
+    // последнее состояние, так что финальный ответ = актуальный проект.
+    let inflight = false;
+    let dirty = false;
+    const refetch = (): void => {
+      if (inflight) {
+        dirty = true;
+        return;
+      }
+      inflight = true;
+      api
+        .getProject(id)
+        .then((p) => !cancelled && setProject(p))
+        .catch(
+          (e) => !cancelled && setError(e?.message ?? 'could not load project'),
+        )
+        .finally(() => {
+          inflight = false;
+          if (dirty && !cancelled) {
+            dirty = false;
+            refetch();
+          }
+        });
+    };
+    refetch();
 
     const sb = getSupabase();
     if (!sb) return () => {
@@ -86,6 +106,10 @@ export function useProject(id: string | null): {
             if (payload.eventType === 'DELETE') return;
             const next = mapProjectRow(payload.new);
             setProject((prev) => (prev ? { ...prev, ...next } : next));
+            // Realtime-строка не несёт signed-превью (brand.screenshotUrl /
+            // visuals[].cropUrl) — их подписывает API. Есть brand → перечитываем,
+            // иначе скрин и кропы в визарде остаются тёмными заглушками.
+            if (next.brand) refetch();
           },
         )
         .subscribe();

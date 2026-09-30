@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type { Brand, Format, Plan, Preset } from '@pyrocut/shared';
 import { api, ApiError } from '@/lib/client/api';
 import { DEMO_MODE } from '@/lib/client/demo';
@@ -17,14 +17,19 @@ function guessKind(name: string): 'logo' | 'screenshot' {
   return /logo|mark|brand/i.test(name) ? 'logo' : 'screenshot';
 }
 
-/** /new — мастер из 4 шагов (§4). */
+/**
+ * /new — мастер из 4 шагов (§4). Проект держим в URL (?p=<id>): анализ идёт
+ * ~минуту, и если юзер перезагрузит вкладку или уйдёт и вернётся по ссылке —
+ * визард продолжится с шага «brand», а не начнёт с пустого поля.
+ */
 export function Wizard({ plan }: { plan: Plan }) {
   const router = useRouter();
   const toast = useToast();
+  const resumeId = useSearchParams().get('p');
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(resumeId ? 1 : 0);
   const [url, setUrl] = useState('');
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(resumeId);
   const [videoId, setVideoId] = useState<string | null>(null);
   const [format, setFormat] = useState<Format>('16:9');
   const [batchCount, setBatchCount] = useState<number | null>(null);
@@ -53,6 +58,7 @@ export function Wizard({ plan }: { plan: Plan }) {
           brief: brief || undefined,
         });
         setProjectId(p.id);
+        router.replace(`/app/new?p=${p.id}`);
       }
       setStep(1);
     } catch (e) {
@@ -163,13 +169,14 @@ export function Wizard({ plan }: { plan: Plan }) {
         {step === 1 && (
           <StepBrand
             project={project}
-            url={url}
+            url={url || project?.sourceUrl || ''}
             uploading={uploading}
             onUpload={handleUpload}
             onConfirm={handleConfirmBrand}
             onBack={() => {
               setProjectId(null);
               setStep(0);
+              router.replace('/app/new');
             }}
           />
         )}

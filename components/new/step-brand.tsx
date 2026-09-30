@@ -1,16 +1,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowRight, ArrowLeft, Globe, Plus } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 import type { Brand, Project } from '@pyrocut/shared';
 import { cn } from '@/lib/cn';
 import { Button } from '@/components/ui/button';
 import { Chip } from '@/components/ui/chip';
-import { Scrubber } from '@/components/ui/scrubber';
 import { Dropzone } from '@/components/ui/dropzone';
 import { useSignedUrl, BUCKET_ASSETS } from '@/lib/client/storage';
-import { projectStatusMeta, videoProgress } from '@/lib/status';
-import { StatusBadge } from '@/components/ui/status-badge';
+import { BrandScan } from './brand-scan';
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
+/** Полный brand (не ранний частичный {screenshotPath} от воркера). */
+function isCompleteBrand(b: Brand | null | undefined): b is Brand {
+  return Boolean(b && Array.isArray(b.colors) && Array.isArray(b.fonts));
+}
 
 /** Шаг 2 — извлечённый бренд: подтверждение/правка. */
 export function StepBrand({
@@ -28,16 +39,20 @@ export function StepBrand({
   onConfirm: (brand: Brand) => void;
   onBack: () => void;
 }) {
-  const ready = project?.status === 'ready' && project.brand;
+  const ready = project?.status === 'ready' && isCompleteBrand(project.brand);
 
   // локальная редактируемая копия бренда
   const [brand, setBrand] = useState<Brand | null>(null);
   useEffect(() => {
-    if (project?.brand) setBrand(project.brand);
+    if (isCompleteBrand(project?.brand)) setBrand(project.brand);
   }, [project?.brand]);
 
-  // скриншот лендинга — storage-путь приватного bucket'а → signed URL.
-  const screenshotUrl = useSignedUrl(BUCKET_ASSETS, brand?.screenshotPath);
+  // Скрин: signed URL от API (brand.screenshotUrl); фолбэк — подпись в браузере.
+  const signedFallback = useSignedUrl(
+    BUCKET_ASSETS,
+    brand?.screenshotUrl ? null : brand?.screenshotPath,
+  );
+  const screenshotUrl = brand?.screenshotUrl ?? signedFallback;
 
   if (project?.status === 'failed') {
     return (
@@ -55,25 +70,13 @@ export function StepBrand({
 
   if (!ready || !brand) {
     return (
-      <div className="mx-auto max-w-[480px] py-12 text-center">
-        <div className="mx-auto mb-6 flex max-w-[300px] items-center gap-2 rounded-full border border-hair bg-wash px-4 py-2 text-[13px] text-ink2">
-          <Globe className="size-4 shrink-0 text-muted" />
-          <span className="truncate">{url}</span>
-        </div>
-        <h2 className="display text-2xl text-ink">reading your brand…</h2>
-        <p className="mx-auto mt-3 max-w-[360px] text-sm text-muted">
-          pulling colors, fonts, headline and a screenshot. takes a few seconds.
-        </p>
-        <div className="mx-auto mt-6 max-w-[300px]">
-          <Scrubber
-            value={videoProgress('rendering')}
-            active
-          />
-          <div className="mt-3 flex justify-center">
-            <StatusBadge meta={projectStatusMeta(project?.status ?? 'pending')} />
-          </div>
-        </div>
-      </div>
+      <BrandScan
+        url={url}
+        status={project?.status ?? 'pending'}
+        screenshotUrl={project?.brand?.screenshotUrl ?? null}
+        startedAt={project?.createdAt}
+        onBack={onBack}
+      />
     );
   }
 
@@ -111,20 +114,9 @@ export function StepBrand({
       <div className="grid gap-5 md:grid-cols-2">
         {/* screenshot */}
         <div className="win-surface relative aspect-[16/10] overflow-hidden rounded-[var(--radius-card)] shadow-win">
-          {screenshotUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={screenshotUrl}
-              alt="landing screenshot"
-              className="absolute inset-0 size-full object-cover object-top"
-            />
-          ) : (
-            <div className="absolute inset-0 grid place-items-center text-[12px] text-white/50">
-              screenshot pending
-            </div>
-          )}
+          <Preview url={screenshotUrl} alt="landing screenshot" />
           <span className="absolute left-3 top-3">
-            <Chip tone="win">{new URL(url).hostname}</Chip>
+            <Chip tone="win">{hostOf(url)}</Chip>
           </span>
         </div>
 
@@ -291,6 +283,7 @@ export function StepBrand({
                     <CropThumb
                       key={`${v.cropPath}-${i}`}
                       path={v.cropPath}
+                      signedUrl={v.cropUrl ?? null}
                       label={v.label}
                       hero={v.hero}
                     />
@@ -334,17 +327,49 @@ export function StepBrand({
   );
 }
 
-/** Превью реального кропа продукта (приватный bucket → signed URL). */
+/**
+ * Картинка на тёмной поверхности с честными состояниями: «loading…» пока нет
+ * URL, «couldn’t load» если браузер не смог её забрать (раньше любой сбой
+ * выглядел как молчаливый чёрный прямоугольник).
+ */
+function Preview({ url, alt }: { url: string | null; alt: string }) {
+  const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [url]);
+
+  if (!url || failed) {
+    return (
+      <div className="absolute inset-0 grid place-items-center px-3 text-center font-[family-name:var(--font-mono)] text-[11px] text-white/50">
+        {failed ? 'couldn’t load preview' : 'loading preview…'}
+      </div>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt={alt}
+      onError={() => {
+        console.warn('[brand] preview failed to load', url.replace(/\?.*$/, ''));
+        setFailed(true);
+      }}
+      className="absolute inset-0 size-full object-cover object-top"
+    />
+  );
+}
+
+/** Превью реального кропа продукта: signed URL от API, фолбэк — подпись в браузере. */
 function CropThumb({
   path,
+  signedUrl,
   label,
   hero,
 }: {
   path: string | null;
+  signedUrl: string | null;
   label: string;
   hero: boolean;
 }) {
-  const url = useSignedUrl(BUCKET_ASSETS, path);
+  const fallback = useSignedUrl(BUCKET_ASSETS, signedUrl ? null : path);
   return (
     <div
       className={cn(
@@ -353,18 +378,7 @@ function CropThumb({
       )}
       title={label}
     >
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={url}
-          alt={label}
-          className="absolute inset-0 size-full object-cover object-top"
-        />
-      ) : (
-        <div className="absolute inset-0 grid place-items-center text-[10px] text-white/40">
-          …
-        </div>
-      )}
+      <Preview url={signedUrl ?? fallback} alt={label} />
       {hero && (
         <span className="absolute left-1 top-1 rounded-full bg-violet px-1.5 py-0.5 font-[family-name:var(--font-mono)] text-[9px] text-white">
           hero
