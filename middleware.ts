@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/auth/middleware';
 
-/** Публичные пути (без auth-гарда). '/' — маркетинговый лендинг. */
-const PUBLIC_PREFIXES = ['/login', '/auth', '/kitchen'];
+/** Публичные пути (без auth-гарда). '/' — маркетинговый лендинг, /videos — его ролики. */
+const PUBLIC_PREFIXES = ['/login', '/auth', '/kitchen', '/videos'];
 
 function isPublic(path: string): boolean {
   if (path === '/') return true; // лендинг (rewrite → /landing.html)
@@ -38,6 +38,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|webm|mp3)$).*)',
   ],
 };
