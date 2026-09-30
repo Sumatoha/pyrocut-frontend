@@ -1408,13 +1408,13 @@ hr.rule {
     <figure class="hero-reel fade-up fade-d4">
       <div class="reel-bar">
         <span class="reel-dot" style="background:#FF6A2C"></span>
-        <span class="reel-name">pyrocut.com → dolly-169.mp4</span>
+        <span class="reel-name">pyrocut.com → reel.mp4</span>
         <span class="reel-rec">REC</span>
       </div>
       <div class="reel-stage hero-stage">
-        <video class="reel-video" src="/videos/dolly-169.mp4" poster="/videos/dolly-169.jpg" muted loop playsinline preload="auto"></video>
+        <video class="reel-video" src="/videos/hero.mp4" poster="/videos/hero.jpg" muted loop playsinline preload="auto"></video>
         <div class="reel-scrub"><span class="rc-cur">0:00</span><div class="rt"><div class="rf"></div></div><span class="rc-dur">0:00</span></div>
-        <div class="reel-tag"><b>this page, as a video</b><span>rendered from www.pyrocut.com · no edits</span></div>
+        <div class="reel-tag"><b>url → reel in 22 seconds</b><span>every clip inside is a real pyrocut render</span></div>
       </div>
     </figure>
   </div>
@@ -2048,10 +2048,16 @@ hr.rule {
       const dur = stage.querySelector('.rc-dur');
       const setDur = () => { if (dur && video.duration) dur.textContent = fmt(video.duration); };
       if (video.readyState >= 1) setDur(); else video.addEventListener('loadedmetadata', setDur);
-      video.addEventListener('timeupdate', () => {
-        if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration * 100).toFixed(1)}%`;
+      // timeupdate fires ~4×/s → the scrubber jerks; drive it per frame while the video plays
+      let raf = 0;
+      const tick = () => {
+        if (fill && video.duration) fill.style.width = `${(video.currentTime / video.duration * 100).toFixed(2)}%`;
         if (cur) cur.textContent = fmt(video.currentTime);
-      });
+        raf = video.paused || video.ended ? 0 : requestAnimationFrame(tick);
+      };
+      video.addEventListener('play', () => { if (!raf) raf = requestAnimationFrame(tick); });
+      video.addEventListener('pause', () => { cancelAnimationFrame(raf); raf = 0; tick(); });
+      video.addEventListener('seeked', tick);
     });
     if (reduce) return; // reduced motion: постер-кадр, без автоплея
     const vio = new IntersectionObserver((entries) => {

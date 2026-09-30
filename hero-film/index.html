@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>pyrocut — hero film</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&display=swap" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  /*
+   * pyrocut hero film — авторская композиция для первого экрана лендинга (22с, 1920×1080).
+   * История продукта: URL набирается → страница сканируется, из неё вылетают цвета, шрифт,
+   * копи, скрины → собирается раскадровка → готовые ролики играют в устройствах → экспорт.
+   * Ассеты рядом: page.png (скрин лендинга), frame-1..6.jpg (кадры раскадровки),
+   * reel-169.mp4 / reel-916.mp4 (настоящие рендеры движка сцен).
+   * Рендер: npx hyperframes render <эта папка> --fps 60 --quality high
+   */
+  :root {
+    --noir: #0E0B1F; --noir-2: #1B1533; --violet: #6D4AFF; --violet2: #9A6BFF; --heat: #FF6A2C; --ember: #FF5A1F;
+    --line: rgba(255,255,255,.12); --mut: rgba(255,255,255,.58);
+    --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--noir); color: #fff;
+    font-family: var(--mono); transform-origin: top left; -webkit-font-smoothing: antialiased; }
+  #camera { position: absolute; inset: 0; }
+  .layer { position: absolute; inset: 0; }
+
+  /* фон: аврора из двух свечений + точечная сетка + виньетка */
+  .aura { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform, opacity; }
+  .aura.a { width: 1100px; height: 1100px; left: -260px; top: -420px; background: radial-gradient(circle, rgba(109,74,255,.55), rgba(109,74,255,0) 66%); }
+  .aura.b { width: 900px; height: 900px; right: -220px; bottom: -380px; background: radial-gradient(circle, rgba(255,106,44,.42), rgba(255,106,44,0) 66%); }
+  .dots { background-image: radial-gradient(rgba(255,255,255,.07) 1.5px, rgba(0,0,0,0) 1.5px); background-size: 34px 34px; opacity: .9; }
+  .vig { background: radial-gradient(120% 90% at 50% 48%, rgba(0,0,0,0) 55%, rgba(0,0,0,.5)); z-index: 40; pointer-events: none; }
+  .grain { z-index: 41; opacity: .07; mix-blend-mode: overlay; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>"); }
+
+  .scene { position: absolute; inset: 0; opacity: 0; visibility: hidden; will-change: transform, opacity, filter; }
+  .k { font-size: 22px; letter-spacing: .18em; text-transform: uppercase; color: var(--violet2); font-weight: 700; }
+
+  /* ── S1: поле URL ── */
+  .field { position: absolute; left: 50%; top: 50%; width: 980px; height: 104px; margin: -52px 0 0 -490px; display: flex; align-items: center;
+    gap: 14px; padding: 10px 10px 10px 34px; border-radius: 999px; background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.16);
+    box-shadow: 0 40px 120px -30px rgba(109,74,255,.55), inset 0 1px 0 rgba(255,255,255,.12); will-change: transform, opacity, filter; }
+  .field .globe { width: 26px; height: 26px; border: 2px solid var(--mut); border-radius: 50%; position: relative; flex: none; }
+  .field .globe::before { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 12px; margin-left: -7px; border: 2px solid var(--mut); border-radius: 50%; }
+  .field .scheme { font-size: 30px; color: var(--mut); }
+  .field .typed { font-size: 34px; font-weight: 500; letter-spacing: -.01em; white-space: nowrap; flex: 1; display: flex; align-items: center; }
+  .typed span { opacity: 0; }
+  .caret { display: inline-block; width: 3px; height: 40px; background: var(--heat); margin-left: 4px; }
+  .go { height: 84px; padding: 0 44px; border-radius: 999px; display: flex; align-items: center; font-size: 28px; font-weight: 700; color: #fff;
+    background: linear-gradient(96deg, var(--violet), var(--violet2)); box-shadow: 0 18px 44px -14px rgba(109,74,255,.9); will-change: transform; white-space: nowrap; }
+  .hint { position: absolute; left: 50%; top: 50%; margin-top: 90px; transform: translateX(-50%); font-size: 24px; color: var(--mut); white-space: nowrap; }
+
+  /* курсор */
+  .cursor { position: absolute; z-index: 30; left: 1250px; top: 520px; width: 46px; height: 46px; opacity: 0; will-change: transform; filter: drop-shadow(0 8px 18px rgba(0,0,0,.5)); }
+  .cursor svg { position: absolute; left: 0; top: 0; }
+  .ring { position: absolute; left: 4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; border: 3px solid var(--heat); opacity: 0; transform: scale(.4); }
+
+  /* ── S2: браузер + скан ── */
+  .browser { position: absolute; left: 260px; top: 118px; width: 1400px; height: 860px; border-radius: 20px; overflow: hidden;
+    background: var(--noir-2); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 60px 140px -40px rgba(0,0,0,.8); will-change: transform, opacity, filter; }
+  .bar { height: 46px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid rgba(255,255,255,.1); font-size: 15px; color: rgba(255,255,255,.62); }
+  .bar .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--violet2); }
+  .bar .rec { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12px; letter-spacing: .14em; color: var(--heat); }
+  .bar .rec::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--heat); }
+  .view { position: absolute; left: 0; top: 46px; right: 0; bottom: 0; overflow: hidden; background: #fff; }
+  .pagewrap { position: absolute; left: 0; top: 0; width: 1400px; will-change: transform; }
+  .pagewrap img { display: block; width: 1400px; height: auto; }
+  /* подсветки регионов — в координатах страницы (1400 wide), едут вместе с ней */
+  .hl { position: absolute; border: 3px solid var(--ember); border-radius: 12px; opacity: 0; box-shadow: 0 0 0 6px rgba(255,90,31,.18), 0 0 40px rgba(255,90,31,.35); will-change: transform, opacity; }
+  .hl i { position: absolute; left: -3px; top: -3px; right: -3px; bottom: -3px; background: rgba(255,90,31,.12); border-radius: 10px; }
+  .beam { position: absolute; left: -40px; right: -40px; top: -6px; height: 6px; background: linear-gradient(90deg, rgba(255,106,44,0), var(--heat) 20%, #fff 50%, var(--heat) 80%, rgba(255,106,44,0)); opacity: 0; z-index: 4; will-change: transform;
+    box-shadow: 0 0 30px 6px rgba(255,106,44,.55), 0 30px 80px 20px rgba(255,106,44,.18); }
+  .beamhaze { position: absolute; left: 0; right: 0; height: 220px; margin-top: -220px; background: linear-gradient(180deg, rgba(255,106,44,0), rgba(255,106,44,.22)); }
+  .tag { position: absolute; z-index: 6; display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 12px; font-size: 22px; font-weight: 700;
+    background: rgba(14,11,31,.92); color: #fff; border: 1px solid rgba(255,255,255,.18); box-shadow: 0 20px 50px -18px rgba(0,0,0,.7); opacity: 0; white-space: nowrap; will-change: transform, opacity; }
+  .tag b { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+  .tag .sw { display: inline-flex; gap: 6px; }
+  .tag .sw i { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(255,255,255,.25); }
+
+  /* brand kit — панель справа, куда прилетают находки */
+  .kit { position: absolute; left: 1360px; top: 190px; width: 460px; padding: 28px 30px; border-radius: 22px; background: rgba(27,21,51,.82); border: 1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(16px); box-shadow: 0 50px 120px -40px rgba(0,0,0,.8); opacity: 0; will-change: transform, opacity; }
+  .kit h4 { font-size: 15px; letter-spacing: .2em; text-transform: uppercase; color: var(--violet2); margin-bottom: 20px; }
+  .kit .row { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,.08); font-size: 22px; opacity: 0; will-change: transform, opacity; }
+  .kit .row span { color: var(--mut); font-size: 16px; letter-spacing: .12em; text-transform: uppercase; width: 96px; flex: none; }
+  .kit .row i { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.2); }
+  .kit .row em { font-style: normal; font-weight: 700; }
+  .kit .row .thumb { width: 64px; height: 40px; border-radius: 6px; background: #fff url(page.png) 0 0 / 100% auto; border: 1px solid rgba(255,255,255,.2); }
+
+  /* ── S3: раскадровка ── */
+  .sb-title { position: absolute; left: 0; right: 0; top: 150px; text-align: center; }
+  .sb-title h2 { font-size: 64px; font-weight: 800; letter-spacing: -.03em; margin-top: 18px; }
+  .sb-title h2 em { font-style: normal; color: var(--heat); }
+  .looks { position: absolute; left: 0; right: 0; top: 318px; display: flex; justify-content: center; gap: 12px; }
+  .look { position: relative; padding: 12px 22px; border-radius: 999px; font-size: 22px; color: var(--mut); border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); opacity: 0; }
+  .look.on { color: #fff; border-color: var(--violet2); background: rgba(109,74,255,.22); }
+  .strip { position: absolute; left: 130px; top: 470px; width: 1660px; display: flex; gap: 22px; }
+  .card { position: relative; width: 258px; flex: none; opacity: 0; will-change: transform, opacity; }
+  .card img { display: block; width: 258px; height: 145px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,.16); box-shadow: 0 30px 60px -30px rgba(0,0,0,.9); }
+  .card small { display: block; margin-top: 12px; font-size: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--mut); }
+  .card small b { color: var(--violet2); margin-right: 8px; }
+  .beats { position: absolute; left: 130px; top: 720px; width: 1660px; height: 4px; background: rgba(255,255,255,.12); border-radius: 2px; }
+  .beats .fill { position: absolute; inset: 0; background: linear-gradient(90deg, var(--violet), var(--heat)); transform-origin: 0 50%; transform: scaleX(0); border-radius: 2px; }
+  .beats i { position: absolute; top: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--heat); box-shadow: 0 0 0 5px rgba(255,106,44,.2); margin-left: -8px; opacity: 0; transform: scale(0); }
+  .sb-meta { position: absolute; left: 0; right: 0; top: 770px; text-align: center; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--mut); }
+
+  /* ── S4: устройства (вне #camera: внутри — видео-клипы) ── */
+  #devices { position: absolute; inset: 0; z-index: 20; opacity: 0; visibility: hidden; }
+  .laptop { position: absolute; left: 160px; top: 168px; width: 1180px; height: 740px; perspective: 2400px; will-change: transform, opacity, filter; }
+  .laptop .bezel { position: absolute; inset: 0; border-radius: 26px; background: #0b0918; border: 1px solid rgba(255,255,255,.16);
+    box-shadow: 0 70px 160px -40px rgba(0,0,0,.85), inset 0 0 0 14px #050411; will-change: transform; }
+  .laptop .screen { position: absolute; left: 20px; top: 20px; width: 1140px; height: 641px; border-radius: 12px; overflow: hidden; background: #000; }
+  .laptop .base { position: absolute; left: -40px; right: -40px; bottom: -22px; height: 26px; border-radius: 0 0 22px 22px; background: linear-gradient(180deg, #24203a, #120f22); border: 1px solid rgba(255,255,255,.12); }
+  .laptop .base::after { content: ""; position: absolute; left: 50%; top: 0; width: 220px; height: 8px; margin-left: -110px; border-radius: 0 0 8px 8px; background: #0b0918; }
+  .phone { position: absolute; left: 1420px; top: 168px; width: 330px; height: 712px; perspective: 2000px; will-change: transform, opacity, filter; }
+  .phone .bezel { position: absolute; inset: 0; border-radius: 48px; background: #0b0918; border: 1px solid rgba(255,255,255,.18);
+    box-shadow: 0 60px 140px -40px rgba(0,0,0,.85), inset 0 0 0 10px #050411; will-change: transform; }
+  .phone .screen { position: absolute; left: 14px; top: 14px; width: 302px; height: 684px; border-radius: 38px; overflow: hidden; background: #000; }
+  .phone .notch { position: absolute; left: 50%; top: 22px; width: 90px; height: 24px; margin-left: -45px; border-radius: 12px; background: #050411; z-index: 3; }
+  .screen video { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cap { position: absolute; font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: var(--mut); opacity: 0; }
+  .cap b { color: #fff; margin-right: 10px; }
+  .cap.l { left: 160px; top: 950px; } .cap.p { left: 1420px; top: 920px; }
+
+  /* ── S5: экспорт и CTA ── */
+  .chip { position: absolute; left: 50%; top: 250px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 16px; padding: 18px 28px; border-radius: 16px;
+    background: rgba(27,21,51,.9); border: 1px solid rgba(255,255,255,.16); font-size: 26px; opacity: 0; will-change: transform, opacity; box-shadow: 0 30px 80px -30px rgba(0,0,0,.8); }
+  .chip i { width: 34px; height: 34px; border-radius: 50%; background: #45E08A; display: inline-flex; align-items: center; justify-content: center; color: #0b0918; font-weight: 800; font-size: 20px; font-style: normal; }
+  .chip span { color: var(--mut); }
+  .final { position: absolute; left: 0; right: 0; top: 380px; text-align: center; }
+  .final h1 { font-size: 118px; line-height: 1.06; font-weight: 800; letter-spacing: -.035em; }
+  .final h1 .w { display: inline-block; overflow: hidden; padding: .1em .06em .16em; margin: -.1em -.06em -.16em; }
+  .final h1 .wi { display: inline-block; will-change: transform; }
+  .final h1 .hi { position: relative; display: inline-block; padding: 0 .16em; margin: 0 -.04em; }
+  .final h1 .hi i { position: absolute; inset: .12em 0 .02em; z-index: -1; border-radius: .1em; background: var(--ember); transform: scaleX(0); transform-origin: 0 50%; }
+  .final p { margin-top: 26px; font-size: 26px; color: var(--mut); opacity: 0; }
+  .final .btnwrap { position: relative; display: inline-flex; margin-top: 46px; }
+  .final .btn { padding: 26px 54px; border-radius: 999px; font-size: 32px; font-weight: 700; background: linear-gradient(96deg, var(--violet), var(--violet2)); box-shadow: 0 24px 60px -18px rgba(109,74,255,.9); opacity: 0; will-change: transform, opacity; }
+  .final .cursor { left: 60%; top: 58%; }
+</style>
+</head>
+<body>
+<div id="stage" data-composition-id="pyrocut-hero" data-start="0" data-width="1920" data-height="1080">
+  <div id="camera" class="clip" data-start="0" data-duration="22" data-track-index="0">
+    <div class="layer bg"><div class="aura a"></div><div class="aura b"></div><div class="layer dots"></div></div>
+
+    <!-- S1 · набор URL -->
+    <section class="scene" id="s1">
+      <div class="field" id="field">
+        <span class="globe"></span><span class="scheme">https://</span>
+        <span class="typed" id="typed"><span>p</span><span>y</span><span>r</span><span>o</span><span>c</span><span>u</span><span>t</span><span>.</span><span>c</span><span>o</span><span>m</span><i class="caret" id="caret"></i></span>
+        <div class="go" id="go">start free →</div>
+      </div>
+      <div class="hint" id="hint">paste any landing url</div>
+      <div class="cursor" id="cur1"><i class="ring"></i><svg viewBox="0 0 24 24" width="46" height="46"><path d="M5 3l14 8.5-6.2 1.6L9.5 19z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+    </section>
+
+    <!-- S2 · скан страницы -->
+    <section class="scene" id="s2">
+      <div class="browser" id="browser">
+        <div class="bar"><span class="dot"></span><span>pyrocut.com</span><span class="rec">READING BRAND</span></div>
+        <div class="view">
+          <div class="pagewrap" id="pagewrap">
+            <img src="page.png" alt="" />
+            <div class="hl" id="hl-copy" style="left:180px;top:118px;width:1040px;height:330px"><i></i></div>
+            <div class="hl" id="hl-cta" style="left:330px;top:505px;width:470px;height:70px"><i></i></div>
+            <div class="hl" id="hl-screens" style="left:110px;top:1480px;width:1250px;height:440px"><i></i></div>
+            <div class="tag" id="t-copy" style="left:200px;top:462px"><b style="background:var(--heat)"></b>hero copy</div>
+            <div class="tag" id="t-pal" style="left:820px;top:462px"><span class="sw"><i style="background:#FF5A1F"></i><i style="background:#6D4AFF"></i><i style="background:#0D0C11"></i><i style="background:#FFFFFF"></i></span>palette</div>
+            <div class="tag" id="t-font" style="left:300px;top:596px"><b style="background:var(--violet2)"></b>font · JetBrains Mono</div>
+            <div class="tag" id="t-cta" style="left:840px;top:596px"><b style="background:#45E08A"></b>cta · start free</div>
+            <div class="tag" id="t-scr" style="left:560px;top:1930px"><b style="background:var(--heat)"></b>screens ×6</div>
+          </div>
+          <div class="beam" id="beam"><div class="beamhaze"></div></div>
+        </div>
+      </div>
+      <div class="kit" id="kit">
+        <h4>brand kit · pyrocut.com</h4>
+        <div class="row"><span>palette</span><i style="background:#FF5A1F"></i><i style="background:#6D4AFF"></i><i style="background:#0D0C11"></i><i style="background:#FFFFFF"></i></div>
+        <div class="row"><span>font</span><em>JetBrains Mono</em></div>
+        <div class="row"><span>copy</span><em>paste a url. ship a demo video.</em></div>
+        <div class="row"><span>cta</span><em>start free →</em></div>
+        <div class="row"><span>screens</span><i class="thumb"></i><i class="thumb" style="background-position:0 -30px"></i><i class="thumb" style="background-position:0 -60px"></i><em>×6</em></div>
+      </div>
+    </section>
+
+    <!-- S3 · раскадровка -->
+    <section class="scene" id="s3">
+      <div class="sb-title"><div class="k">storyboard</div><h2 id="sb-h">7 scenes. <em>directed</em>, not templated.</h2></div>
+      <div class="looks" id="looks">
+        <span class="look on">dolly</span><span class="look">snapcut</span><span class="look">editorial</span><span class="look">kinetic</span><span class="look">terminal</span>
+      </div>
+      <div class="strip" id="strip">
+        <div class="card"><img src="frame-1.jpg" alt="" /><small><b>01</b>hook</small></div>
+        <div class="card"><img src="frame-2.jpg" alt="" /><small><b>02</b>product</small></div>
+        <div class="card"><img src="frame-3.jpg" alt="" /><small><b>03</b>steps</small></div>
+        <div class="card"><img src="frame-4.jpg" alt="" /><small><b>04</b>looks</small></div>
+        <div class="card"><img src="frame-5.jpg" alt="" /><small><b>05</b>metrics</small></div>
+        <div class="card"><img src="frame-6.jpg" alt="" /><small><b>06</b>cta</small></div>
+      </div>
+      <div class="beats" id="beats"><div class="fill"></div><i style="left:0%"></i><i style="left:12%"></i><i style="left:27%"></i><i style="left:44%"></i><i style="left:61%"></i><i style="left:80%"></i><i style="left:100%"></i></div>
+      <div class="sb-meta" id="sb-meta">34s · 60 fps · beats timed to the cut</div>
+    </section>
+
+    <!-- S4 · подписи под устройствами -->
+    <section class="scene" id="s4">
+      <div class="cap l" id="cap-l"><b>16:9</b>launch thread · 1080p</div>
+      <div class="cap p" id="cap-p"><b>9:16</b>reels</div>
+    </section>
+
+    <!-- S5 · экспорт, финал -->
+    <section class="scene" id="s5">
+      <div class="chip" id="chip"><i>✓</i>reel.mp4 <span>1080p · 34s · ready to post</span></div>
+      <div class="final">
+        <h1 id="final-h">
+          <span class="w"><span class="wi">paste</span></span> <span class="w"><span class="wi">a</span></span> <span class="w"><span class="wi">url.</span></span><br />
+          <span class="w"><span class="wi">ship</span></span> <span class="w"><span class="wi">a</span></span>
+          <span class="w"><span class="wi hi"><i id="mark"></i>demo video.</span></span>
+        </h1>
+        <p id="final-p">free to try · no editor to learn</p>
+        <div class="btnwrap"><div class="btn" id="btn">start free →</div>
+          <div class="cursor" id="cur2"><i class="ring"></i><svg viewBox="0 0 24 24" width="46" height="46"><path d="M5 3l14 8.5-6.2 1.6L9.5 19z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layer vig"></div><div class="layer grain"></div>
+  </div>
+
+  <!-- устройства с реальными рендерами: видео-клипы живут вне таймированного #camera -->
+  <div id="devices">
+    <div class="laptop" id="laptop">
+      <div class="bezel"><div class="screen">
+        <video id="v169" src="reel-169.mp4" data-start="12.4" data-duration="6.6" data-media-start="3.9" data-track-index="1" muted playsinline></video>
+      </div><div class="base"></div></div>
+    </div>
+    <div class="phone" id="phone">
+      <div class="bezel"><div class="notch"></div><div class="screen">
+        <video id="v916" src="reel-916.mp4" data-start="12.7" data-duration="6.3" data-media-start="0.2" data-track-index="2" muted playsinline></video>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var stage = document.getElementById("stage");
+  var q = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var D = 22;
+  var tl = gsap.timeline({ paused: true });
+
+  /* фон дышит весь ролик */
+  tl.fromTo(".aura.a", { x: -40, y: -20, scale: 1 }, { x: 120, y: 60, scale: 1.18, duration: D, ease: "sine.inOut" }, 0);
+  tl.fromTo(".aura.b", { x: 40, y: 30, scale: 1.1 }, { x: -120, y: -60, scale: 1, duration: D, ease: "sine.inOut" }, 0);
+
+  /* курсор: приезжает, кликает (кольцо + сжатие) */
+  function click(cur, at) {
+    var ring = cur.querySelector(".ring");
+    tl.fromTo(cur, { opacity: 0, x: 320, y: 240 }, { opacity: 1, x: 0, y: 0, duration: 0.8, ease: "power3.inOut" }, at);
+    var c = at + 0.9;
+    tl.to(cur, { scale: 0.84, duration: 0.09, ease: "power2.in", transformOrigin: "10% 10%" }, c);
+    tl.to(cur, { scale: 1, duration: 0.18, ease: "back.out(3)", transformOrigin: "10% 10%" }, c + 0.09);
+    tl.fromTo(ring, { opacity: 0.9, scale: 0.4 }, { opacity: 0, scale: 2.8, duration: 0.6, ease: "power2.out", immediateRender: false }, c + 0.04);
+    return c;
+  }
+
+  /* ── S1 · 0–3.3 : набор URL ── */
+  tl.set("#s1", { autoAlpha: 1 }, 0);
+  tl.fromTo("#field", { opacity: 0, scale: 0.92, y: 24, filter: "blur(10px)" }, { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power3.out" }, 0.15);
+  tl.fromTo("#hint", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.5);
+  tl.fromTo("#caret", { opacity: 1 }, { opacity: 0, duration: 0.42, ease: "steps(1)", repeat: 6, yoyo: true }, 0.4);
+  tl.fromTo(q("#typed span"), { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.085 }, 0.9);
+  var c1 = click(document.getElementById("cur1"), 1.75);
+  tl.to("#go", { scale: 0.94, duration: 0.1, ease: "power2.in" }, c1);
+  tl.to("#go", { scale: 1, duration: 0.35, ease: "back.out(2.5)" }, c1 + 0.1);
+  tl.to("#hint", { opacity: 0, duration: 0.3 }, c1);
+  /* поле улетает вверх и растворяется — начинается чтение страницы */
+  tl.to("#field", { y: -90, scale: 0.9, opacity: 0, filter: "blur(12px)", duration: 0.5, ease: "power2.in" }, 3.0);
+  tl.to("#cur1", { opacity: 0, duration: 0.25 }, 3.0);
+  tl.set("#s1", { autoAlpha: 0 }, 3.5);
+
+  /* ── S2 · 3.2–9.2 : скан ── */
+  tl.set("#s2", { autoAlpha: 1 }, 3.2);
+  tl.fromTo("#browser", { opacity: 0, scale: 0.82, y: 80, filter: "blur(14px)" }, { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "power3.out" }, 3.25);
+  /* страница медленно скроллится всю сцену */
+  tl.fromTo("#pagewrap", { y: 0 }, { y: -1450, duration: 5.4, ease: "sine.inOut" }, 3.9);
+  /* луч сканера проходит по вьюпорту сверху вниз */
+  tl.fromTo("#beam", { y: 0, opacity: 0 }, { opacity: 1, duration: 0.3 }, 4.0);
+  tl.to("#beam", { y: 820, duration: 4.4, ease: "none" }, 4.1);
+  tl.to("#beam", { opacity: 0, duration: 0.3 }, 8.4);
+  /* находки: подсветка региона → тег. Тайминг — когда луч проходит регион */
+  function find(hlId, tagId, at) {
+    tl.fromTo("#" + hlId, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out" }, at);
+    tl.fromTo("#" + tagId, { opacity: 0, y: 14, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, at + 0.15);
+  }
+  find("hl-copy", "t-copy", 4.6);
+  tl.fromTo("#t-pal", { opacity: 0, y: 14, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, 5.1);
+  find("hl-cta", "t-cta", 5.7);
+  tl.fromTo("#t-font", { opacity: 0, y: 14, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, 6.1);
+  find("hl-screens", "t-scr", 7.4);
+  /* браузер сдвигается влево, справа собирается brand kit */
+  tl.to("#browser", { x: -230, scale: 0.88, duration: 0.8, ease: "power3.inOut" }, 6.4);
+  tl.fromTo("#kit", { opacity: 0, x: 60, scale: 0.94 }, { opacity: 1, x: -70, scale: 1, duration: 0.7, ease: "power3.out" }, 6.6);
+  tl.fromTo(q("#kit .row"), { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out", stagger: 0.32 }, 6.9);
+  /* выход: zoom-through */
+  tl.to("#browser", { scale: 1.6, opacity: 0, filter: "blur(10px)", duration: 0.5, ease: "power3.in" }, 9.0);
+  tl.to("#kit", { scale: 1.3, x: -40, opacity: 0, filter: "blur(8px)", duration: 0.45, ease: "power3.in" }, 9.05);
+  tl.set("#s2", { autoAlpha: 0 }, 9.55);
+
+  /* ── S3 · 9.4–13.0 : раскадровка ── */
+  tl.set("#s3", { autoAlpha: 1 }, 9.4);
+  tl.fromTo("#s3 .k", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 9.5);
+  tl.fromTo("#sb-h", { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out" }, 9.6);
+  tl.fromTo(q("#looks .look"), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", stagger: 0.06 }, 9.9);
+  tl.fromTo(q("#strip .card"), { opacity: 0, y: 70, rotation: -3 }, { opacity: 1, y: 0, rotation: 0, duration: 0.6, ease: "back.out(1.6)", stagger: 0.11 }, 10.2);
+  tl.fromTo("#beats .fill", { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 10.7);
+  tl.fromTo(q("#beats i"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(3)", stagger: 0.19 }, 10.75);
+  tl.fromTo("#sb-meta", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 11.6);
+  /* выбор look: подсветка перескакивает по чипам и садится на dolly */
+  var looks = q("#looks .look");
+  [1, 2, 3, 4, 0].forEach(function (idx, n) {
+    var t = 11.0 + n * 0.22;
+    tl.set(looks, { className: "look" }, t);
+    tl.set(looks[idx], { className: "look on" }, t);
+  });
+  tl.to("#s3", { scale: 0.92, opacity: 0, filter: "blur(10px)", duration: 0.5, ease: "power3.in" }, 12.6);
+  tl.set("#s3", { autoAlpha: 0 }, 13.1);
+
+  /* ── S4 · 12.4–19.0 : устройства с настоящими рендерами ── */
+  tl.set("#devices", { autoAlpha: 1 }, 12.4);
+  tl.set("#s4", { autoAlpha: 1 }, 12.4);
+  tl.fromTo("#laptop", { opacity: 0, scale: 0.84, y: 60, filter: "blur(12px)" }, { opacity: 1, scale: 1, y: 0, filter: "blur(0px)", duration: 0.9, ease: "power3.out" }, 12.5);
+  tl.fromTo("#laptop .bezel", { rotationY: -14, rotationX: 6 }, { rotationY: -4, rotationX: 2, duration: 1.2, ease: "power3.out" }, 12.5);
+  tl.to("#laptop .bezel", { rotationY: 3, rotationX: -1, duration: 5.0, ease: "sine.inOut" }, 13.7);
+  tl.fromTo("#phone", { opacity: 0, x: 140, filter: "blur(12px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.9, ease: "power3.out" }, 12.8);
+  tl.fromTo("#phone .bezel", { rotationY: 22 }, { rotationY: 8, duration: 1.2, ease: "power3.out" }, 12.8);
+  tl.to("#phone .bezel", { rotationY: -6, duration: 5.0, ease: "sine.inOut" }, 14.0);
+  tl.fromTo("#cap-l", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 13.4);
+  tl.fromTo("#cap-p", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 13.7);
+  /* выход устройств: уезжают вниз в размытие, чип экспорта падает сверху */
+  tl.to("#laptop", { y: 120, scale: 0.9, opacity: 0, filter: "blur(10px)", duration: 0.55, ease: "power3.in" }, 18.6);
+  tl.to("#phone", { y: 120, scale: 0.9, opacity: 0, filter: "blur(10px)", duration: 0.55, ease: "power3.in" }, 18.65);
+  tl.to("#s4", { opacity: 0, duration: 0.3 }, 18.6);
+  tl.set("#devices", { autoAlpha: 0 }, 19.25);
+  tl.set("#s4", { autoAlpha: 0 }, 19.25);
+
+  /* ── S5 · 19.0–22 : экспорт → финал → клик ── */
+  tl.set("#s5", { autoAlpha: 1 }, 19.0);
+  tl.fromTo("#chip", { opacity: 0, y: -40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: "back.out(2)" }, 19.05);
+  tl.fromTo(q("#final-h .wi"), { yPercent: 118 }, { yPercent: 0, duration: 0.8, ease: "power4.out", stagger: 0.07 }, 19.35);
+  tl.fromTo("#mark", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out", immediateRender: false }, 20.0);
+  tl.fromTo("#final-p", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 20.1);
+  tl.fromTo("#btn", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(2.2)" }, 20.25);
+  var c2 = click(document.getElementById("cur2"), 20.6);
+  tl.to("#btn", { scale: 0.94, duration: 0.1, ease: "power2.in" }, c2);
+  tl.to("#btn", { scale: 1, duration: 0.4, ease: "back.out(2.5)" }, c2 + 0.1);
+
+  tl.to({}, { duration: D }, 0);
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines["pyrocut-hero"] = tl;
+
+  if (!navigator.webdriver) {
+    var fit = function () {
+      var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = "translate(" + (window.innerWidth - 1920 * k) / 2 + "px," + (window.innerHeight - 1080 * k) / 2 + "px) scale(" + k + ")";
+    };
+    fit(); window.addEventListener("resize", fit); tl.play();
+  }
+})();
+</script>
+</body>
+</html>

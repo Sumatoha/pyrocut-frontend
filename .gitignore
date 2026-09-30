@@ -12,3 +12,5 @@ coverage/
 next-env.d.ts
 *.tsbuildinfo
 .vercel
+# hero-film: рендер-выход не храним, только исходники
+hero-film/renders/
